@@ -1,0 +1,85 @@
+﻿using System.Collections.ObjectModel;
+using System.Text;
+using SkillLevelEvaluationExporter.Interfaces;
+using SkillLevelEvaluationExporter.Properties;
+using SkillLevelEvaluationExporter.Utils;
+
+namespace SkillLevelEvaluationExporter.Models;
+
+public abstract class Question
+{
+
+    private IList<IContent> _content = new List<IContent>();
+    public IList<IContent> Content
+    {
+        get => _content;
+        set
+        {
+            _content = value;
+            ContentString = SetString(value);
+        }
+    }
+
+    public int MajorIndex { get; }
+
+    public int MinorIndex { get; }
+
+    public int BuildIndex { get; }
+
+    public int QuestionIndex { get; }
+
+    public int PageIndex { get;  }
+
+    public abstract bool IsValid { get; }
+
+    public QuestionInputType InputType { get; }
+
+    public string Reference { get;  }
+
+    public string ContentString { get; set; } = string.Empty;
+
+    public string SetString(IList<IContent> content)
+    {
+        var builder = new StringBuilder();
+        foreach (var item in content)
+        {
+            builder.Append(item);
+        }
+        return builder.ToString();
+    }
+
+
+    protected Question(int majorIndex = -1, int minorIndex = -1, int buildIndex = -1, int questionIndex = -1, int pageIndex = -1, QuestionInputType inputType = QuestionInputType.Unknown, string reference = "")
+    {
+        MajorIndex = majorIndex;
+        MinorIndex = minorIndex;
+        BuildIndex = buildIndex;
+        QuestionIndex = questionIndex;
+        PageIndex = pageIndex;
+        InputType = inputType;
+        Reference = reference;
+    }
+
+
+    protected bool CheckBasicValid()
+    {
+        if (MajorIndex < 0 || MinorIndex < 0 || BuildIndex < 0 || QuestionIndex < 0 || PageIndex < 0)
+        {
+            return false;
+        }
+        if (InputType == QuestionInputType.Unknown)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public override string ToString()
+    {
+        return $"""
+                {MajorIndex}.{MinorIndex}.{BuildIndex} ${ReflectionUtil.GetEnumDescription(InputType)} 第{QuestionIndex}题
+                ${ContentString}
+                """;
+    }
+}
