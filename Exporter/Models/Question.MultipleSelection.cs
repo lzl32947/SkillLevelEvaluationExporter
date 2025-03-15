@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using SkillLevelEvaluationExporter.Interfaces;
+using SkillLevelEvaluationExporter.Models.Interfaces;
 using SkillLevelEvaluationExporter.Properties;
 using SkillLevelEvaluationExporter.Utils;
 
@@ -16,10 +16,12 @@ public class MultipleSelectionQuestion : Question
         int minorIndex,
         int buildIndex,
         int questionIndex,
+        QuestionLevel questionLevel,
         int pageIndex,
+        IList<IContent> content,
         string reference,
         IList<IList<IContent>> options,
-        IList<int> answerIndex) : base(majorIndex, minorIndex, buildIndex, questionIndex, pageIndex, QuestionInputType.MultipleSelection, reference)
+        IList<int> answerIndex) : base(majorIndex, minorIndex, buildIndex, questionIndex, pageIndex, QuestionInputType.MultipleSelection, questionLevel, content, reference)
     {
         Options = options;
         AnswerIndex = answerIndex;
@@ -35,7 +37,7 @@ public class MultipleSelectionQuestion : Question
                 return false;
             }
 
-            if ( AnswerIndex.Count == 0)
+            if (AnswerIndex.Count == 0)
             {
                 return false;
             }

@@ -1,9 +1,10 @@
 ﻿using System.Text;
+using SkillLevelEvaluationExporter.Models.Interfaces;
 using SkillLevelEvaluationExporter.Properties;
 
 namespace SkillLevelEvaluationExporter.Models;
 
-public class TrueOrFalseQuestion:Question
+public class TrueOrFalseQuestion : Question
 {
     public override bool IsValid { get; }
 
@@ -14,9 +15,11 @@ public class TrueOrFalseQuestion:Question
         int minorIndex,
         int buildIndex,
         int questionIndex,
+        QuestionLevel questionLevel,
         int pageIndex,
+        IList<IContent> content,
         string reference,
-        bool isCorrect) : base(majorIndex, minorIndex, buildIndex, questionIndex, pageIndex, QuestionInputType.TrueOrFalse, reference)
+        bool isCorrect) : base(majorIndex, minorIndex, buildIndex, questionIndex, pageIndex, QuestionInputType.TrueOrFalse, questionLevel, content, reference)
     {
         IsCorrect = isCorrect;
         IsValid = CheckValid();

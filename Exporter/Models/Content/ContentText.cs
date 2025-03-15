@@ -1,4 +1,4 @@
-﻿using SkillLevelEvaluationExporter.Interfaces;
+﻿using SkillLevelEvaluationExporter.Models.Interfaces;
 
 namespace SkillLevelEvaluationExporter.Models.Content;
 
@@ -9,6 +9,11 @@ public class ContentText:IContent
     public Guid Guid { get; }
 
     public string Text { get; }
+
+    public override string ToString()
+    {
+        return Text;
+    }
 
     public ContentText(string text)
     {

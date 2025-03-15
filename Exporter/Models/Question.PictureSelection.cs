@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using SkillLevelEvaluationExporter.Interfaces;
+using SkillLevelEvaluationExporter.Models.Interfaces;
 using SkillLevelEvaluationExporter.Properties;
 using SkillLevelEvaluationExporter.Utils;
 
@@ -16,10 +16,12 @@ public class PictureSelectionQuestion : Question
         int minorIndex,
         int buildIndex,
         int questionIndex,
+        QuestionLevel questionLevel,
         int pageIndex,
+        IList<IContent> content,
         string reference,
         IList<IList<IContent>> options,
-        int answerIndex) : base(majorIndex, minorIndex, buildIndex, questionIndex, pageIndex, QuestionInputType.PictureSelection, reference)
+        int answerIndex) : base(majorIndex, minorIndex, buildIndex, questionIndex, pageIndex, QuestionInputType.PictureSelection, questionLevel, content, reference)
     {
         Options = options;
         AnswerIndex = answerIndex;

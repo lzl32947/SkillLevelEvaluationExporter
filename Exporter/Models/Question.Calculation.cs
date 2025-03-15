@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using SkillLevelEvaluationExporter.Interfaces;
+using SkillLevelEvaluationExporter.Models.Interfaces;
 using SkillLevelEvaluationExporter.Properties;
 using SkillLevelEvaluationExporter.Utils;
 
@@ -7,7 +7,6 @@ namespace SkillLevelEvaluationExporter.Models;
 
 public class CalculationQuestion : Question
 {
-
     public string Answer { get; }
 
     public IList<IContent> Solve { get; }
@@ -17,10 +16,12 @@ public class CalculationQuestion : Question
         int minorIndex,
         int buildIndex,
         int questionIndex,
+        QuestionLevel questionLevel,
         int pageIndex,
+        IList<IContent> content,
         string reference,
         IList<IContent> solve,
-        string answer) : base(majorIndex, minorIndex, buildIndex, questionIndex, pageIndex, QuestionInputType.Calculation, reference)
+        string answer) : base(majorIndex, minorIndex, buildIndex, questionIndex, pageIndex, QuestionInputType.Calculation, questionLevel, content, reference)
     {
         Solve = solve;
         Answer = answer;

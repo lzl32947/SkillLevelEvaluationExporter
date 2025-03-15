@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Text;
-using SkillLevelEvaluationExporter.Interfaces;
+using SkillLevelEvaluationExporter.Models.Interfaces;
 using SkillLevelEvaluationExporter.Properties;
 using SkillLevelEvaluationExporter.Utils;
 
@@ -8,8 +8,8 @@ namespace SkillLevelEvaluationExporter.Models;
 
 public abstract class Question
 {
-
     private IList<IContent> _content = new List<IContent>();
+
     public IList<IContent> Content
     {
         get => _content;
@@ -20,6 +20,9 @@ public abstract class Question
         }
     }
 
+
+    public QuestionLevel Level { get;  }
+
     public int MajorIndex { get; }
 
     public int MinorIndex { get; }
@@ -28,13 +31,13 @@ public abstract class Question
 
     public int QuestionIndex { get; }
 
-    public int PageIndex { get;  }
+    public int PageIndex { get; }
 
     public abstract bool IsValid { get; }
 
     public QuestionInputType InputType { get; }
 
-    public string Reference { get;  }
+    public string Reference { get; }
 
     public string ContentString { get; set; } = string.Empty;
 
@@ -45,19 +48,23 @@ public abstract class Question
         {
             builder.Append(item);
         }
+
         return builder.ToString();
     }
 
 
-    protected Question(int majorIndex = -1, int minorIndex = -1, int buildIndex = -1, int questionIndex = -1, int pageIndex = -1, QuestionInputType inputType = QuestionInputType.Unknown, string reference = "")
+    protected Question(int majorIndex , int minorIndex , int buildIndex, int questionIndex , int pageIndex , QuestionInputType inputType, QuestionLevel level ,
+        IList<IContent> content , string reference = "")
     {
         MajorIndex = majorIndex;
         MinorIndex = minorIndex;
         BuildIndex = buildIndex;
+        Level = level;
         QuestionIndex = questionIndex;
         PageIndex = pageIndex;
         InputType = inputType;
         Reference = reference;
+        Content = content;
     }
 
 
@@ -67,6 +74,7 @@ public abstract class Question
         {
             return false;
         }
+
         if (InputType == QuestionInputType.Unknown)
         {
             return false;
@@ -79,7 +87,7 @@ public abstract class Question
     {
         return $"""
                 {MajorIndex}.{MinorIndex}.{BuildIndex} ${ReflectionUtil.GetEnumDescription(InputType)} 第{QuestionIndex}题
-                ${ContentString}
+                {ContentString}
                 """;
     }
 }

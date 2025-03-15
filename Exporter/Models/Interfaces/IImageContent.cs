@@ -1,6 +1,4 @@
-﻿using UglyToad.PdfPig.Content;
-
-namespace SkillLevelEvaluationExporter.Interfaces;
+﻿namespace SkillLevelEvaluationExporter.Models.Interfaces;
 
 public interface IImageContent : IContent
 {

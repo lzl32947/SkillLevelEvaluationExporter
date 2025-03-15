@@ -1,5 +1,5 @@
 ﻿using System.Drawing;
-using SkillLevelEvaluationExporter.Interfaces;
+using SkillLevelEvaluationExporter.Models.Interfaces;
 
 namespace SkillLevelEvaluationExporter.Models.Content;
 
@@ -11,7 +11,7 @@ public class ContentImage : IImageContent
 
     public override string ToString()
     {
-        return $"[图片{ImageIndex:D4}]";
+        return $"[图片:{ImageIndex:D4}]";
     }
 
     public string GetImageFilePath()
@@ -28,6 +28,27 @@ public class ContentImage : IImageContent
     public int ImageWidth { get; }
 
     public bool IsValidImage { get; }
+
+
+    public ContentImage(string savePath, int imageIndex)
+    {
+        Guid = Guid.NewGuid();
+        SaveFileName = Path.GetFileName(savePath);
+        SaveFilePath = Path.GetDirectoryName(savePath);
+        ImageIndex = imageIndex;
+        try
+        {
+            var image = Image.FromFile(savePath);
+            ImageHeight = image.Height;
+            ImageWidth = image.Width;
+            IsValidImage = true;
+        } catch (Exception)
+        {
+            IsValidImage = false;
+            ImageHeight = -1;
+            ImageWidth = -1;
+        }
+    }
 
     public ContentImage(string saveFileName, string saveFilePath, int imageIndex)
     {
