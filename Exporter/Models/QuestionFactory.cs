@@ -7,26 +7,26 @@ namespace SkillLevelEvaluationExporter.Models;
 
 public static class QuestionFactory
 {
-    public static Question? Create(string question,QuestionInputType questionType, QuestionLevel questionLevel, string imageDirectory)
+    public static Question? Create(string question,QuestionInputType questionType, QuestionLevel questionLevel,int pageIndex, string imageDirectory)
     {
          switch (questionType)
          {
              case QuestionInputType.SingleSelection:
-                 return CreateSelectableQuestion(question, QuestionInputType.SingleSelection, questionLevel, imageDirectory)  as SingleSelectionQuestion;
+                 return CreateSelectableQuestion(question, QuestionInputType.SingleSelection, questionLevel,pageIndex, imageDirectory)  as SingleSelectionQuestion;
              case QuestionInputType.MultipleSelection:
-                 return CreateSelectableQuestion(question, QuestionInputType.MultipleSelection, questionLevel, imageDirectory) as MultipleSelectionQuestion;
+                 return CreateSelectableQuestion(question, QuestionInputType.MultipleSelection, questionLevel,pageIndex, imageDirectory) as MultipleSelectionQuestion;
              case QuestionInputType.PictureSelection:
-                 return CreateSelectableQuestion(question, QuestionInputType.PictureSelection, questionLevel, imageDirectory) as PictureSelectionQuestion;
+                 return CreateSelectableQuestion(question, QuestionInputType.PictureSelection, questionLevel,pageIndex, imageDirectory) as PictureSelectionQuestion;
              case QuestionInputType.TrueOrFalse:
-                 return CreateSelectableQuestion(question, QuestionInputType.TrueOrFalse, questionLevel, imageDirectory) as TrueOrFalseQuestion;
+                 return CreateSelectableQuestion(question, QuestionInputType.TrueOrFalse, questionLevel,pageIndex, imageDirectory) as TrueOrFalseQuestion;
              case QuestionInputType.Calculation:
-                 return CreateCalculationQuestion(question, QuestionInputType.Calculation, questionLevel, imageDirectory) as CalculationQuestion;
+                 return CreateCalculationQuestion(question, QuestionInputType.Calculation, questionLevel,pageIndex, imageDirectory) as CalculationQuestion;
              default:
                  return null;
          }
     }
 
-    private static Question? CreateCalculationQuestion(string question, QuestionInputType calculation, QuestionLevel level, string imageDirectory)
+    private static Question? CreateCalculationQuestion(string question, QuestionInputType calculation, QuestionLevel level,int pageIndex, string imageDirectory)
     {
         string pattern = @"(\d+)\.(\d+)\.(\d+)\.\s*第(\d+)题\s([\s\S]*?)正确答案：(.*?)[，,]\s+教师详解：([\s\S]*?)关联评价点的名称：([.\s\S]*)";
         Regex regex = new Regex(pattern);
@@ -47,7 +47,7 @@ public static class QuestionFactory
                 build,
                 index,
                 level,
-                0,
+                pageIndex,
                 ParseContent(contentString,imageDirectory),
                 reference.Trim('\n','\r'),
                 ParseContent(reason,imageDirectory),
@@ -94,7 +94,7 @@ public static class QuestionFactory
         }).ToList();
     }
 
-    public static Question? CreateSelectableQuestion(string questionContent,QuestionInputType inputType, QuestionLevel level,string imageDirectory)
+    public static Question? CreateSelectableQuestion(string questionContent,QuestionInputType inputType, QuestionLevel level,int pageIndex,string imageDirectory)
     {
         string pattern = @"^(\d+)\.(\d+)\.(\d+)\.第(\d+)题([\s\S]+?)(?=A)(?:A\.)([\s\S]+?)(?=B)(?:B\.)([\s\S]+?)(?=[C正])((?:C\.)([\s\S]+?)(?=[D正]))*((?:D\.)([\s\S]+?)(?=[E正]))*((?:E\.)([\s\S]+?)(?=[F正]))*((?:F\.)([\s\S]+?)(?=[G正]))*((?:G\.)([\s\S]+?)(?=H正))*((?:H\.)([\s\S]+?)(?=I正))*((?:I\.)([\s\S]+?)(?=正))*正确答案：\s*([ABCDEFGHI]+)\s+关联评价点的名称：([.\s\S]*)";
         Regex regex = new(pattern);
@@ -134,34 +134,35 @@ public static class QuestionFactory
                 {
                     options.Add(ParseContent(choice,imageDirectory));
                 }
-                return new SingleSelectionQuestion(major, minor, build, index, level, 0, ParseContent(contentString,imageDirectory), reference.Trim('\n','\r'), options, correctList[0]);
+                return new SingleSelectionQuestion(major, minor, build, index, level, pageIndex, ParseContent(contentString,imageDirectory), reference.Trim('\n','\r'), options, correctList[0]);
             }
-            else if (inputType == QuestionInputType.MultipleSelection)
+
+            if (inputType == QuestionInputType.MultipleSelection)
             {
                 var options = new List<IList<IContent>>();
                 foreach (var choice in choiceList)
                 {
                     options.Add(ParseContent(choice,imageDirectory));
                 }
-                return new MultipleSelectionQuestion(major, minor, build, index, level, 0, ParseContent(contentString,imageDirectory), reference.Trim('\n','\r'), options, correctList);
+                return new MultipleSelectionQuestion(major, minor, build, index, level, pageIndex, ParseContent(contentString,imageDirectory), reference.Trim('\n','\r'), options, correctList);
             }
-            else if (inputType == QuestionInputType.PictureSelection)
+
+            if (inputType == QuestionInputType.PictureSelection)
             {
                 var options = new List<IList<IContent>>();
                 foreach (var choice in choiceList)
                 {
                     options.Add(ParseContent(choice,imageDirectory));
                 }
-                return new PictureSelectionQuestion(major, minor, build, index, level, 0, ParseContent(contentString,imageDirectory), reference.Trim('\n','\r'), options, correctList[0]);
+                return new PictureSelectionQuestion(major, minor, build, index, level, pageIndex, ParseContent(contentString,imageDirectory), reference.Trim('\n','\r'), options, correctList[0]);
             }
-            else if (inputType == QuestionInputType.TrueOrFalse)
+
+            if (inputType == QuestionInputType.TrueOrFalse)
             {
-                return new TrueOrFalseQuestion(major, minor, build, index, level, 0, ParseContent(contentString,imageDirectory), reference.Trim('\n','\r'), correctList[0] == 0);
+                return new TrueOrFalseQuestion(major, minor, build, index, level, pageIndex, ParseContent(contentString,imageDirectory), reference.Trim('\n','\r'), correctList[0] == 0);
             }
-            else
-            {
-                throw new NotImplementedException("Question type not implemented");
-            }
+
+            throw new NotImplementedException("Question type not implemented");
 
         }
 

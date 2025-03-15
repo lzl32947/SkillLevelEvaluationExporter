@@ -52,6 +52,7 @@ public class FileExtractor : IFileExtractor
         {
             throw new ArgumentException("Working directory is empty");
         }
+
         if (!Directory.Exists(WorkingDirectory))
         {
             Directory.CreateDirectory(WorkingDirectory);
@@ -83,6 +84,7 @@ public class FileExtractor : IFileExtractor
         try
         {
             var content = new StringBuilder();
+            var pageDictionary = new Dictionary<int, string>();
             using (PdfDocument pdfDocument = PdfDocument.Open(FilePath!))
             {
                 var pages = pdfDocument.GetPages().ToList();
@@ -90,6 +92,7 @@ public class FileExtractor : IFileExtractor
                 {
                     var wordList = new List<PdfContentElement>();
                     var page = pages[pageNumIndex];
+                    var pageString = new StringBuilder();
                     // 提取文字
                     foreach (var word in page.GetWords())
                     {
@@ -117,14 +120,17 @@ public class FileExtractor : IFileExtractor
                         wordList.Add(new PdfContentElement(
                             PdfContentType.Text, boundingBox, word.Text, pageNumIndex)
                         );
+
+                        pageString.AppendLine(word.Text);
                     }
 
+                    pageDictionary.Add(pageNumIndex + 1, pageString.ToString());
                     // 提取图像
                     foreach (var image in page.GetImages())
                     {
                         var fileName = $"{_imageCounter:D4}";
-                        var imageFilePath = Path.Combine(imageDirectory,  fileName + ".png");
-                        File.WriteAllBytes(imageFilePath, image.RawBytes);
+                        var imageFilePath = Path.Combine(imageDirectory, fileName + ".png");
+                        File.WriteAllBytes(imageFilePath, image.RawBytes.ToArray());
                         var boundingBox = image.Bounds;
 
                         wordList.Add(new PdfContentElement(
@@ -143,14 +149,13 @@ public class FileExtractor : IFileExtractor
                             return 1;
                         }
                         // 小于行高则保留原序列
-                        else if (a.Rectangle.Top > b.Rectangle.Top && Math.Abs(a.Rectangle.Top - b.Rectangle.Top) > Options!.LineSep)
+
+                        if (a.Rectangle.Top > b.Rectangle.Top && Math.Abs(a.Rectangle.Top - b.Rectangle.Top) > Options!.LineSep)
                         {
                             return -1;
                         }
-                        else
-                        {
-                            return a.Rectangle.Left.CompareTo(b.Rectangle.Left);
-                        }
+
+                        return a.Rectangle.Left.CompareTo(b.Rectangle.Left);
                     });
 
                     // 构造当前页面的文本数据
@@ -160,7 +165,6 @@ public class FileExtractor : IFileExtractor
 
                     for (int i = 0; i < wordList.Count; i++)
                     {
-
                         PdfContentElement elementI = wordList[i];
                         if (Math.Abs(elementI.Rectangle.Top - previousTop) > Options!.LineSep)
                         {
@@ -168,6 +172,7 @@ public class FileExtractor : IFileExtractor
                             builder.Append('\n');
                             previousTop = elementI.Rectangle.Top;
                         }
+
                         if (elementI.ContentType == PdfContentType.Text)
                         {
                             builder.Append(elementI.Content);
@@ -177,13 +182,32 @@ public class FileExtractor : IFileExtractor
                             builder.Append($"[图片:{elementI.Content}]");
                         }
                     }
+
                     content = content.Append(builder);
                     content.AppendLine();
                 }
             }
 
-            var major = ReadMajor(content.ToString());
-            var minor = ReadMinor(content.ToString());
+            // 处理页码
+            var pageMap = new Dictionary<Tuple<int,int,int>, int>();
+            foreach (var page in pageDictionary)
+            {
+                var pageIndex = page.Key;
+                var contentText = page.Value;
+                var pattern = @"^(\d+)\.(\d+)\.(\d+)";
+                var regex = new Regex(pattern, RegexOptions.Multiline);
+                var matches = regex.Matches(contentText);
+                foreach (Match match in matches)
+                {
+                    var majorIndex = int.Parse(match.Groups[1].Value);
+                    var minorIndex = int.Parse(match.Groups[2].Value);
+                    var buildIndex = int.Parse(match.Groups[3].Value);
+                    pageMap.Add(new Tuple<int, int, int>(majorIndex, minorIndex, buildIndex), pageIndex);
+                }
+            }
+
+            var inputTypes = ReadMajor(content.ToString());
+            var questionLevels = ReadMinor(content.ToString());
             var meta = ReadMeta(content.ToString());
             var questions = ReadQuestions(content.ToString());
 
@@ -194,18 +218,18 @@ public class FileExtractor : IFileExtractor
                 var question = questions[index];
                 var majorIndex = question.Item1;
                 var minorIndex = question.Item2;
-                var contentText = question.Item3;
-                var level = minor[new Tuple<int, int>(majorIndex, minorIndex)];
-                var type = major[majorIndex];
-                questionTotal.Add(QuestionFactory.Create(contentText, type, level, imageDirectory));
+                var buildIndex = question.Item3;
+                var contentText = question.Item4;
+                var level = questionLevels[new Tuple<int, int>(majorIndex, minorIndex)];
+                var type = inputTypes[majorIndex];
+                pageMap.TryGetValue(new Tuple<int, int, int>(majorIndex, minorIndex, buildIndex),out var page);
+                questionTotal.Add(QuestionFactory.Create(contentText, type, level,page, imageDirectory));
             }
 
 
-
-
-            var paper = new Paper(meta.Item1,new DateTime(year: meta.Item2.Item1, month: meta.Item2.Item2, day: meta.Item2.Item3),
-                questionTotal.Where(q => q != null).ToList()!,Md5!
-                );
+            var paper = new Paper(meta.Item1, new DateTime(year: meta.Item2.Item1, month: meta.Item2.Item2, day: meta.Item2.Item3),
+                questionTotal.Where(q => q != null).ToList()!, Md5!
+            );
             return paper;
         }
         catch (Exception)
@@ -218,12 +242,12 @@ public class FileExtractor : IFileExtractor
             {
                 // ignored
             }
+
             throw;
         }
 
         return null;
     }
-
 
 
     public IDictionary<int, QuestionInputType> ReadMajor(string contentText)
@@ -283,10 +307,10 @@ public class FileExtractor : IFileExtractor
             int orderSmall = int.Parse(match.Groups[1].Value);
             int orderMid = int.Parse(match.Groups[2].Value);
             string content = match.Groups[3].Value;
-            menu.Add(new Tuple<int, int>(orderSmall,orderMid), content);
+            menu.Add(new Tuple<int, int>(orderSmall, orderMid), content);
         }
 
-        Dictionary<Tuple<int,int>, QuestionLevel> levelMap = new Dictionary<Tuple<int,int>, QuestionLevel>();
+        Dictionary<Tuple<int, int>, QuestionLevel> levelMap = new Dictionary<Tuple<int, int>, QuestionLevel>();
 
         foreach (var (key, value) in menu)
         {
@@ -332,7 +356,6 @@ public class FileExtractor : IFileExtractor
             string month = match.Groups[3].Value;
             string day = match.Groups[4].Value;
             return new Tuple<string, Tuple<int, int, int>>(title, new Tuple<int, int, int>(int.Parse(year), int.Parse(month), int.Parse(day)));
-
         }
         else
         {
@@ -340,20 +363,22 @@ public class FileExtractor : IFileExtractor
         }
     }
 
-    public IList<Tuple<int, int, string>> ReadQuestions(string contentText)
+    public IList<Tuple<int, int, int, string>> ReadQuestions(string contentText)
     {
-        IList<Tuple<int, int, string>> list = new List<Tuple<int, int, string>>();
-        string pattern = @"(^(\d+)\.(\d+)\.\d+[.\S\s]*?(?=^\d+\.\d+\.))";
+        List<Tuple<int, int, int, string>> list = new();
+        string pattern = @"(^(\d+)\.(\d+)\.(\d+)[.\S\s]*?(?=^\d+\.\d+\.))";
         Regex regex = new(pattern, RegexOptions.Multiline);
         // 999.999.999 为了匹配最后一个题目
         MatchCollection matches = regex.Matches(contentText + "\n999.999.999");
         foreach (Match match in matches)
         {
             var content = match.Groups[1].Value;
-            var orderBig = int.Parse(match.Groups[2].Value);
-            var orderMid = int.Parse(match.Groups[3].Value);
-            list.Add(new Tuple<int, int, string>(orderBig, orderMid, content));
+            var major = int.Parse(match.Groups[2].Value);
+            var minor = int.Parse(match.Groups[3].Value);
+            var build = int.Parse(match.Groups[4].Value);
+            list.Add(new Tuple<int, int, int, string>(major, minor, build, content));
         }
+
         return list;
     }
 
@@ -363,15 +388,18 @@ public class FileExtractor : IFileExtractor
         {
             throw new ArgumentException("PDF file path is empty");
         }
-        else if (string.IsNullOrEmpty(WorkingDirectory))
+
+        if (string.IsNullOrEmpty(WorkingDirectory))
         {
             throw new ArgumentException("Working directory is empty");
         }
-        else if (string.IsNullOrEmpty(Md5))
+
+        if (string.IsNullOrEmpty(Md5))
         {
             throw new ArgumentException("MD5 is empty");
         }
-        else if (Options == null)
+
+        if (Options == null)
         {
             throw new ArgumentException("Options is empty");
         }

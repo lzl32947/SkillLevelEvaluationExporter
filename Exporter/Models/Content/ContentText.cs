@@ -2,7 +2,7 @@
 
 namespace SkillLevelEvaluationExporter.Models.Content;
 
-public class ContentText:IContent
+public class ContentText : IContent
 {
     public int Length { get; }
 
@@ -20,5 +20,11 @@ public class ContentText:IContent
         Text = text;
         Length = text.Length;
         Guid = Guid.NewGuid();
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is ContentText text &&
+               Text == text.Text;
     }
 }

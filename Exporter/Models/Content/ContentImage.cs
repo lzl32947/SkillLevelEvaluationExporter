@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using SkillLevelEvaluationExporter.Models.Interfaces;
+using SkillLevelEvaluationExporter.Utils;
 
 namespace SkillLevelEvaluationExporter.Models.Content;
 
@@ -25,6 +26,8 @@ public class ContentImage : IImageContent
 
     public int ImageHeight { get; }
 
+    public string Md5 { get; }
+
     public int ImageWidth { get; }
 
     public bool IsValidImage { get; }
@@ -34,7 +37,8 @@ public class ContentImage : IImageContent
     {
         Guid = Guid.NewGuid();
         SaveFileName = Path.GetFileName(savePath);
-        SaveFilePath = Path.GetDirectoryName(savePath);
+        SaveFilePath = Path.GetDirectoryName(savePath) ?? Environment.CurrentDirectory;
+        Md5 = FileUtil.CalculateMD5(savePath);
         ImageIndex = imageIndex;
         try
         {
@@ -55,6 +59,7 @@ public class ContentImage : IImageContent
         Guid = Guid.NewGuid();
         SaveFileName = saveFileName;
         SaveFilePath = saveFilePath;
+        Md5 = FileUtil.CalculateMD5(Path.Combine(saveFilePath, SaveFileName));
         ImageIndex = imageIndex;
         try
         {
@@ -69,5 +74,16 @@ public class ContentImage : IImageContent
             ImageWidth = -1;
         }
 
+    }
+
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is ContentImage image)
+        {
+            return Md5 == image.Md5;
+        }
+
+        return false;
     }
 }

@@ -30,7 +30,7 @@ public class PictureSelectionQuestion : Question
 
     protected bool CheckValid()
     {
-        if (base.CheckBasicValid())
+        if (CheckBasicValid())
         {
             if (Options.Count < 2)
             {

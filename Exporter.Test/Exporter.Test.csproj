@@ -21,4 +21,18 @@
         <Using Include="NUnit.Framework"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Resources\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Exporter\Exporter.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Resources\装表接电工-2025年03月11日机考题库.pdf">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

@@ -28,7 +28,7 @@ public class TrueOrFalseQuestion : Question
 
     protected bool CheckValid()
     {
-        if (base.CheckBasicValid())
+        if (CheckBasicValid())
         {
             return true;
         }
