@@ -130,7 +130,12 @@ public class FileExtractor : IFileExtractor
                     {
                         var fileName = $"{_imageCounter:D4}";
                         var imageFilePath = Path.Combine(imageDirectory, fileName + ".png");
-                        File.WriteAllBytes(imageFilePath, image.RawBytes.ToArray());
+
+                        // 保存图像为 PNG 格式
+                        if (image.TryGetPng(out var pngBytes))
+                        {
+                            File.WriteAllBytes(imageFilePath, pngBytes);
+                        }
                         var boundingBox = image.Bounds;
 
                         wordList.Add(new PdfContentElement(
@@ -194,7 +199,7 @@ public class FileExtractor : IFileExtractor
             {
                 var pageIndex = page.Key;
                 var contentText = page.Value;
-                var pattern = @"^(\d+)\.(\d+)\.(\d+)";
+                var pattern = @"^(\d+)\.(\d+)\.(\d+)\.\s*第(\d+)题";
                 var regex = new Regex(pattern, RegexOptions.Multiline);
                 var matches = regex.Matches(contentText);
                 foreach (Match match in matches)
@@ -210,6 +215,9 @@ public class FileExtractor : IFileExtractor
             var questionLevels = ReadMinor(content.ToString());
             var meta = ReadMeta(content.ToString());
             var questions = ReadQuestions(content.ToString());
+
+            var rawContentStoragePath = Path.Combine(targetDirectory, "raw_content.txt");
+            File.WriteAllText(rawContentStoragePath, content.ToString(), Encoding.UTF8);
 
             var questionTotal = new List<Question?>();
 
@@ -366,10 +374,10 @@ public class FileExtractor : IFileExtractor
     public IList<Tuple<int, int, int, string>> ReadQuestions(string contentText)
     {
         List<Tuple<int, int, int, string>> list = new();
-        string pattern = @"(^(\d+)\.(\d+)\.(\d+)[.\S\s]*?(?=^\d+\.\d+\.))";
+        string pattern = @"(^(\d+)\.(\d+)\.(\d+)\.第\d+题[.\S\s]*?(?=^\d+\.\d+\.\d+\.第\d+题))";
         Regex regex = new(pattern, RegexOptions.Multiline);
         // 999.999.999 为了匹配最后一个题目
-        MatchCollection matches = regex.Matches(contentText + "\n999.999.999");
+        MatchCollection matches = regex.Matches(contentText + "\n999.999.999.第999题");
         foreach (Match match in matches)
         {
             var content = match.Groups[1].Value;
