@@ -132,10 +132,39 @@ public class FileExtractor : IFileExtractor
                         var imageFilePath = Path.Combine(imageDirectory, fileName + ".png");
 
                         // 保存图像为 PNG 格式
+                        var writeFlag = false;
                         if (image.TryGetPng(out var pngBytes))
                         {
                             File.WriteAllBytes(imageFilePath, pngBytes);
+                            writeFlag = true;
                         }
+
+                        if (!writeFlag || !FileUtil.IsValidImage(imageFilePath))
+                        {
+                            if (File.Exists(imageFilePath))
+                            {
+                                File.Delete(imageFilePath);
+                            }
+                            File.WriteAllBytes(imageFilePath, image.RawBytes.ToArray());
+                            if (!FileUtil.IsValidImage(imageFilePath))
+                            {
+                                if (File.Exists(imageFilePath))
+                                {
+                                    File.Delete(imageFilePath);
+                                }
+
+                                var imagePlaceHolder = Path.Combine(Environment.CurrentDirectory, "Resources", "error.png");
+                                if (File.Exists(imagePlaceHolder))
+                                {
+                                    File.Copy(imagePlaceHolder, imageFilePath);
+                                }
+                                else
+                                {
+                                    File.WriteAllBytes(imageFilePath, FileUtil.GetErrorPlaceholderImage());
+                                }
+                            }
+                        }
+
                         var boundingBox = image.Bounds;
 
                         wordList.Add(new PdfContentElement(
@@ -194,7 +223,7 @@ public class FileExtractor : IFileExtractor
             }
 
             // 处理页码
-            var pageMap = new Dictionary<Tuple<int,int,int>, int>();
+            var pageMap = new Dictionary<Tuple<int, int, int>, int>();
             foreach (var page in pageDictionary)
             {
                 var pageIndex = page.Key;
@@ -230,8 +259,8 @@ public class FileExtractor : IFileExtractor
                 var contentText = question.Item4;
                 var level = questionLevels[new Tuple<int, int>(majorIndex, minorIndex)];
                 var type = inputTypes[majorIndex];
-                pageMap.TryGetValue(new Tuple<int, int, int>(majorIndex, minorIndex, buildIndex),out var page);
-                questionTotal.Add(QuestionFactory.Create(contentText, type, level,page, imageDirectory));
+                pageMap.TryGetValue(new Tuple<int, int, int>(majorIndex, minorIndex, buildIndex), out var page);
+                questionTotal.Add(QuestionFactory.Create(contentText, type, level, page, imageDirectory));
             }
 
 

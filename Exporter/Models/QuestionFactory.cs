@@ -89,7 +89,7 @@ public static class QuestionFactory
         return result.Select<Tuple<string, PdfContentType>, IContent>(tuple => tuple.Item2 switch
         {
             PdfContentType.Text => new ContentText(tuple.Item1),
-            PdfContentType.Image => new ContentImage(Path.Combine(imageDirectory, $"{tuple.Item1}.png"), Int32.Parse(tuple.Item1)),
+            PdfContentType.Image => new ContentImage($"{tuple.Item1}.png",imageDirectory, Int32.Parse(tuple.Item1)),
             _ => throw new ArgumentOutOfRangeException()
         }).ToList();
     }

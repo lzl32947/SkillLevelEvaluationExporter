@@ -17,12 +17,12 @@ public class ContentImage : IImageContent
 
     public string GetImageFilePath()
     {
-        return Path.Combine(SaveFilePath, SaveFileName);
+        return Path.Combine(SaveDirectoryPath, SaveFileName);
     }
 
     public string SaveFileName { get;  }
 
-    public string SaveFilePath { get;  }
+    public string SaveDirectoryPath { get;  }
 
     public int ImageHeight { get; }
 
@@ -33,37 +33,29 @@ public class ContentImage : IImageContent
     public bool IsValidImage { get; }
 
 
-    public ContentImage(string savePath, int imageIndex)
-    {
-        Guid = Guid.NewGuid();
-        SaveFileName = Path.GetFileName(savePath);
-        SaveFilePath = Path.GetDirectoryName(savePath) ?? Environment.CurrentDirectory;
-        Md5 = FileUtil.CalculateMD5(savePath);
-        ImageIndex = imageIndex;
-        try
-        {
-            var image = Image.FromFile(savePath);
-            ImageHeight = image.Height;
-            ImageWidth = image.Width;
-            IsValidImage = true;
-        } catch (Exception)
-        {
-            IsValidImage = false;
-            ImageHeight = -1;
-            ImageWidth = -1;
-        }
-    }
-
-    public ContentImage(string saveFileName, string saveFilePath, int imageIndex)
+    public ContentImage(string saveFileName, string saveDirectoryPath, int imageIndex)
     {
         Guid = Guid.NewGuid();
         SaveFileName = saveFileName;
-        SaveFilePath = saveFilePath;
-        Md5 = FileUtil.CalculateMD5(Path.Combine(saveFilePath, SaveFileName));
+        SaveDirectoryPath = saveDirectoryPath;
+        if (!File.Exists(Path.Combine(saveDirectoryPath, SaveFileName)))
+        {
+            var errorPlaceHolder = Path.Combine(Environment.CurrentDirectory, "Resources", "error.png");
+            if (File.Exists(errorPlaceHolder))
+            {
+                File.Copy(errorPlaceHolder, Path.Combine(saveDirectoryPath, saveFileName));
+            }
+            else
+            {
+                File.WriteAllBytes(Path.Combine(saveDirectoryPath, saveFileName), FileUtil.GetErrorPlaceholderImage());
+            }
+        }
+
+        Md5 = FileUtil.CalculateMD5(Path.Combine(saveDirectoryPath, SaveFileName));
         ImageIndex = imageIndex;
         try
         {
-            var image = Image.FromFile(Path.Combine(saveFilePath, saveFileName));
+            var image = Image.FromFile(Path.Combine(saveDirectoryPath, saveFileName));
             ImageHeight = image.Height;
             ImageWidth = image.Width;
             IsValidImage = true;
