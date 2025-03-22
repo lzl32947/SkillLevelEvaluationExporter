@@ -1,17 +1,17 @@
 ﻿using System.Text;
-using SkillLevelEvaluationExporter.Models.Interfaces;
+using SkillLevelEvaluationExporter.Models.Content.Interfaces;
 using SkillLevelEvaluationExporter.Properties;
 using SkillLevelEvaluationExporter.Utils;
 
-namespace SkillLevelEvaluationExporter.Models;
+namespace SkillLevelEvaluationExporter.Models.Questions;
 
-public class MultipleSelectionQuestion : Question
+public class PictureSelectionQuestion : Question
 {
     public IList<IList<IContent>> Options { get; }
 
-    public IList<int> AnswerIndex { get; }
+    public int AnswerIndex { get; }
 
-    public MultipleSelectionQuestion(
+    public PictureSelectionQuestion(
         int majorIndex,
         int minorIndex,
         int buildIndex,
@@ -21,7 +21,7 @@ public class MultipleSelectionQuestion : Question
         IList<IContent> content,
         string reference,
         IList<IList<IContent>> options,
-        IList<int> answerIndex) : base(majorIndex, minorIndex, buildIndex, questionIndex, pageIndex, QuestionInputType.MultipleSelection, questionLevel, content, reference)
+        int answerIndex) : base(majorIndex, minorIndex, buildIndex, questionIndex, pageIndex, QuestionInputType.PictureSelection, questionLevel, content, reference)
     {
         Options = options;
         AnswerIndex = answerIndex;
@@ -37,12 +37,7 @@ public class MultipleSelectionQuestion : Question
                 return false;
             }
 
-            if (AnswerIndex.Count == 0)
-            {
-                return false;
-            }
-
-            if (AnswerIndex.Any(index => index < 0 || index >= Options.Count))
+            if (AnswerIndex < 0 || AnswerIndex >= Options.Count)
             {
                 return false;
             }
@@ -70,8 +65,7 @@ public class MultipleSelectionQuestion : Question
             baseString.Append('\n');
         }
 
-        baseString.Append("答案: ");
-        baseString.Append(string.Join("", AnswerIndex.Select(QuestionUtil.Index2String)));
+        baseString.Append($"答案: {QuestionUtil.Index2String(AnswerIndex)}");
         baseString.Append('\n');
         baseString.AppendLine($"关联评价点名称: {Reference}");
         return baseString.ToString();

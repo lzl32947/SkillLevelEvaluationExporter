@@ -2,6 +2,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using SkillLevelEvaluationExporter.Models;
 using SkillLevelEvaluationExporter.Models.Content;
+using SkillLevelEvaluationExporter.Models.Options;
+using SkillLevelEvaluationExporter.Models.Questions;
 using SkillLevelEvaluationExporter.Properties;
 using SkillLevelEvaluationExporter.Services.Interfaces;
 using SkillLevelEvaluationExporter.Utils;
@@ -45,6 +47,7 @@ public class FileExtractor : IFileExtractor
     public Paper? Extract()
     {
         EnsureCanExtract();
+
 
         # region Ensure working directory
 
@@ -132,37 +135,9 @@ public class FileExtractor : IFileExtractor
                         var imageFilePath = Path.Combine(imageDirectory, fileName + ".png");
 
                         // 保存图像为 PNG 格式
-                        var writeFlag = false;
                         if (image.TryGetPng(out var pngBytes))
                         {
                             File.WriteAllBytes(imageFilePath, pngBytes);
-                            writeFlag = true;
-                        }
-
-                        if (!writeFlag || !FileUtil.IsValidImage(imageFilePath))
-                        {
-                            if (File.Exists(imageFilePath))
-                            {
-                                File.Delete(imageFilePath);
-                            }
-                            File.WriteAllBytes(imageFilePath, image.RawBytes.ToArray());
-                            if (!FileUtil.IsValidImage(imageFilePath))
-                            {
-                                if (File.Exists(imageFilePath))
-                                {
-                                    File.Delete(imageFilePath);
-                                }
-
-                                var imagePlaceHolder = Path.Combine(Environment.CurrentDirectory, "Resources", "error.png");
-                                if (File.Exists(imagePlaceHolder))
-                                {
-                                    File.Copy(imagePlaceHolder, imageFilePath);
-                                }
-                                else
-                                {
-                                    File.WriteAllBytes(imageFilePath, FileUtil.GetErrorPlaceholderImage());
-                                }
-                            }
                         }
 
                         var boundingBox = image.Bounds;
@@ -203,6 +178,7 @@ public class FileExtractor : IFileExtractor
                         if (Math.Abs(elementI.Rectangle.Top - previousTop) > Options!.LineSep)
                         {
                             // 两行内容
+                            // TODO: 判断两行之间是否应该加换行符
                             builder.Append('\n');
                             previousTop = elementI.Rectangle.Top;
                         }

@@ -1,9 +1,9 @@
 using System.Text.RegularExpressions;
 using SkillLevelEvaluationExporter.Models.Content;
-using SkillLevelEvaluationExporter.Models.Interfaces;
+using SkillLevelEvaluationExporter.Models.Content.Interfaces;
 using SkillLevelEvaluationExporter.Properties;
 
-namespace SkillLevelEvaluationExporter.Models;
+namespace SkillLevelEvaluationExporter.Models.Questions;
 
 public static class QuestionFactory
 {
@@ -20,15 +20,15 @@ public static class QuestionFactory
              case QuestionInputType.TrueOrFalse:
                  return CreateSelectableQuestion(question, QuestionInputType.TrueOrFalse, questionLevel,pageIndex, imageDirectory) as TrueOrFalseQuestion;
              case QuestionInputType.Calculation:
-                 return CreateCalculationQuestion(question, QuestionInputType.Calculation, questionLevel,pageIndex, imageDirectory) as CalculationQuestion;
+                 return CreateCalculationQuestion(question, questionLevel,pageIndex, imageDirectory) as CalculationQuestion;
              default:
                  return null;
          }
     }
 
-    private static Question? CreateCalculationQuestion(string question, QuestionInputType calculation, QuestionLevel level,int pageIndex, string imageDirectory)
+    private static Question? CreateCalculationQuestion(string question, QuestionLevel level,int pageIndex, string imageDirectory)
     {
-        string pattern = @"(\d+)\.(\d+)\.(\d+)\.\s*第(\d+)题\s([\s\S]*?)正确答案：(.*?)[，,]\s+教师详解：([\s\S]*?)关联评价点的名称：([.\s\S]*)";
+        string pattern = @"(\d+)\.(\d+)\.(\d+)\.\s*第(\d+)题\s([\s\S]*?)正确答案：(.*?)[,,]\s+教师详解：([\s\S]*?)关联评价点的名称：([.\s\S]*)";
         Regex regex = new Regex(pattern);
         Match match = regex.Match(question);
         if (match.Success)

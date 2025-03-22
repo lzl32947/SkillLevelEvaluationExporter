@@ -1,3 +1,5 @@
+using SkillLevelEvaluationExporter.Models.Questions;
+
 namespace SkillLevelEvaluationExporter.Models;
 
 public class Paper

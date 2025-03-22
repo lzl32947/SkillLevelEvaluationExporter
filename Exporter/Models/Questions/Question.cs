@@ -1,10 +1,9 @@
-﻿using System.Collections.ObjectModel;
-using System.Text;
-using SkillLevelEvaluationExporter.Models.Interfaces;
+﻿using System.Text;
+using SkillLevelEvaluationExporter.Models.Content.Interfaces;
 using SkillLevelEvaluationExporter.Properties;
 using SkillLevelEvaluationExporter.Utils;
 
-namespace SkillLevelEvaluationExporter.Models;
+namespace SkillLevelEvaluationExporter.Models.Questions;
 
 public abstract class Question
 {

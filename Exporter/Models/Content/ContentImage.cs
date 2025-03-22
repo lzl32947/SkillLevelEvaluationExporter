@@ -1,5 +1,5 @@
 ﻿using System.Drawing;
-using SkillLevelEvaluationExporter.Models.Interfaces;
+using SkillLevelEvaluationExporter.Models.Content.Interfaces;
 using SkillLevelEvaluationExporter.Utils;
 
 namespace SkillLevelEvaluationExporter.Models.Content;
@@ -15,22 +15,30 @@ public class ContentImage : IImageContent
         return $"[图片:{ImageIndex:D4}]";
     }
 
+    public string ToMd5String()
+    {
+        return $"[图片:{Md5}]";
+    }
+
     public string GetImageFilePath()
     {
         return Path.Combine(SaveDirectoryPath, SaveFileName);
     }
 
+    public int? Height { get; }
+
+    public int? Width { get; }
+
+    public bool Valid { get; }
+
+    public bool HasReplaced { get; }
+
     public string SaveFileName { get;  }
 
     public string SaveDirectoryPath { get;  }
 
-    public int ImageHeight { get; }
-
     public string Md5 { get; }
 
-    public int ImageWidth { get; }
-
-    public bool IsValidImage { get; }
 
 
     public ContentImage(string saveFileName, string saveDirectoryPath, int imageIndex)
@@ -38,34 +46,60 @@ public class ContentImage : IImageContent
         Guid = Guid.NewGuid();
         SaveFileName = saveFileName;
         SaveDirectoryPath = saveDirectoryPath;
-        if (!File.Exists(Path.Combine(saveDirectoryPath, SaveFileName)))
+        var imageFilePath = Path.Combine(saveDirectoryPath, saveFileName);
+        if (!File.Exists(imageFilePath))
         {
+            Valid = false;
             var errorPlaceHolder = Path.Combine(Environment.CurrentDirectory, "Resources", "error.png");
             if (File.Exists(errorPlaceHolder))
             {
-                File.Copy(errorPlaceHolder, Path.Combine(saveDirectoryPath, saveFileName));
+                File.Copy(errorPlaceHolder, imageFilePath);
             }
             else
             {
-                File.WriteAllBytes(Path.Combine(saveDirectoryPath, saveFileName), FileUtil.GetErrorPlaceholderImage());
+                File.WriteAllBytes(imageFilePath, FileUtil.GetErrorPlaceholderImage());
             }
+            HasReplaced = true;
+            Height = null;
+            Width = null;
         }
+        else
+        {
+            if (!FileUtil.IsValidImage(imageFilePath))
+            {
+                using (var image = Image.FromFile(imageFilePath))
+                {
+                    Height = image.Height;
+                    Width = image.Width;
+                }
 
-        Md5 = FileUtil.CalculateMD5(Path.Combine(saveDirectoryPath, SaveFileName));
+                Valid = false;
+                var errorPlaceHolder = Path.Combine(Environment.CurrentDirectory, "Resources", "error.png");
+                File.Delete(imageFilePath);
+                if (File.Exists(errorPlaceHolder))
+                {
+                    File.Copy(errorPlaceHolder, imageFilePath);
+                }
+                else
+                {
+                    File.WriteAllBytes(imageFilePath, FileUtil.GetErrorPlaceholderImage());
+                }
+                HasReplaced = true;
+            }
+            else
+            {
+                using (var image = Image.FromFile(imageFilePath))
+                {
+                    Height = image.Height;
+                    Width = image.Width;
+                }
+                Valid = true;
+                HasReplaced = false;
+            }
+
+        }
+        Md5 = FileUtil.CalculateMD5(imageFilePath);
         ImageIndex = imageIndex;
-        try
-        {
-            var image = Image.FromFile(Path.Combine(saveDirectoryPath, saveFileName));
-            ImageHeight = image.Height;
-            ImageWidth = image.Width;
-            IsValidImage = true;
-        } catch (Exception)
-        {
-            IsValidImage = false;
-            ImageHeight = -1;
-            ImageWidth = -1;
-        }
-
     }
 
 
@@ -77,5 +111,10 @@ public class ContentImage : IImageContent
         }
 
         return false;
+    }
+
+    public override int GetHashCode()
+    {
+        return Md5.GetHashCode();
     }
 }

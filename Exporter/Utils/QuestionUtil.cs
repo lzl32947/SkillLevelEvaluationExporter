@@ -1,7 +1,14 @@
-﻿namespace SkillLevelEvaluationExporter.Utils;
+﻿// 命名空间SkillLevelEvaluationExporter.Utils包含了用于处理问题的工具类
+namespace SkillLevelEvaluationExporter.Utils;
 
-public class QuestionUtil
+// QuestionUtil类提供了与问题索引和字符串表示转换相关的工具方法
+public static class QuestionUtil
 {
+    /// <summary>
+    /// 将整数索引转换为对应的字符串标识
+    /// </summary>
+    /// <param name="index">整数索引,通常用于标识问题的选项</param>
+    /// <returns>对应的字符串标识,如"A", "B"等；如果索引超出范围,则返回"Unknown"</returns>
     public static string Index2String(int index)
     {
         return index switch
@@ -36,16 +43,31 @@ public class QuestionUtil
         };
     }
 
+    /// <summary>
+    /// 将整数索引列表转换为对应的字符串标识列表
+    /// </summary>
+    /// <param name="index">整数索引列表</param>
+    /// <returns>对应的字符串标识列表</returns>
     public static IList<string> Index2String(IList<int> index)
     {
         return index.Select(Index2String).ToList();
     }
 
+    /// <summary>
+    /// 将整数索引列表转换为一个连续的字符串
+    /// </summary>
+    /// <param name="index">整数索引列表</param>
+    /// <returns>一个连续的字符串,由各个索引对应的字符串标识组成</returns>
     public static string Index2JointString(IList<int> index)
     {
-        return  string.Join("", Index2String(index));
+        return string.Join("", Index2String(index));
     }
 
+    /// <summary>
+    /// 将字符串标识转换为对应的整数索引
+    /// </summary>
+    /// <param name="str">字符串标识,如"A", "B"等</param>
+    /// <returns>对应的整数索引；如果字符串不在定义范围内,则返回-1</returns>
     public static int String2Index(string str)
     {
         return str switch
@@ -80,10 +102,14 @@ public class QuestionUtil
         };
     }
 
+    /// <summary>
+    /// 将字符串标识列表转换为对应的整数索引列表
+    /// </summary>
+    /// <param name="str">字符串标识列表</param>
+    /// <returns>对应的整数索引列表</returns>
     public static IList<int> String2Index(IList<string> str)
     {
         return str.Select(String2Index).ToList();
     }
-
 
 }

@@ -1,9 +1,8 @@
 ﻿using System.Text;
-using SkillLevelEvaluationExporter.Models.Interfaces;
+using SkillLevelEvaluationExporter.Models.Content.Interfaces;
 using SkillLevelEvaluationExporter.Properties;
-using SkillLevelEvaluationExporter.Utils;
 
-namespace SkillLevelEvaluationExporter.Models;
+namespace SkillLevelEvaluationExporter.Models.Questions;
 
 public class CalculationQuestion : Question
 {

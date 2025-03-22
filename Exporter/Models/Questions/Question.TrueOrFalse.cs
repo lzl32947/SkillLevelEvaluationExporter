@@ -1,8 +1,8 @@
 ﻿using System.Text;
-using SkillLevelEvaluationExporter.Models.Interfaces;
+using SkillLevelEvaluationExporter.Models.Content.Interfaces;
 using SkillLevelEvaluationExporter.Properties;
 
-namespace SkillLevelEvaluationExporter.Models;
+namespace SkillLevelEvaluationExporter.Models.Questions;
 
 public class TrueOrFalseQuestion : Question
 {

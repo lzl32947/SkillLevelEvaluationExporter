@@ -1,4 +1,6 @@
-﻿using SkillLevelEvaluationExporter.Models.Interfaces;
+﻿using System.Security.Cryptography;
+using SkillLevelEvaluationExporter.Models.Content.Interfaces;
+using SkillLevelEvaluationExporter.Utils;
 
 namespace SkillLevelEvaluationExporter.Models.Content;
 
@@ -10,6 +12,8 @@ public class ContentText : IContent
 
     public string Text { get; }
 
+    public string Md5 { get; }
+
     public override string ToString()
     {
         return Text;
@@ -20,11 +24,17 @@ public class ContentText : IContent
         Text = text;
         Length = text.Length;
         Guid = Guid.NewGuid();
+        Md5 = FileUtil.CalculateStringMd5(text);
     }
 
     public override bool Equals(object? obj)
     {
         return obj is ContentText text &&
                Text == text.Text;
+    }
+
+    public override int GetHashCode()
+    {
+        return Md5.GetHashCode();
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace SkillLevelEvaluationExporter.Models;
+﻿namespace SkillLevelEvaluationExporter.Models.Options;
 
 public class ExporterOptions
 {

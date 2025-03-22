@@ -1,17 +1,18 @@
 ﻿using System.Text;
-using SkillLevelEvaluationExporter.Models.Interfaces;
+using SkillLevelEvaluationExporter.Models.Content.Interfaces;
 using SkillLevelEvaluationExporter.Properties;
 using SkillLevelEvaluationExporter.Utils;
 
-namespace SkillLevelEvaluationExporter.Models;
+namespace SkillLevelEvaluationExporter.Models.Questions;
 
-public class PictureSelectionQuestion : Question
+public class SingleSelectionQuestion : Question
 {
     public IList<IList<IContent>> Options { get; }
 
     public int AnswerIndex { get; }
 
-    public PictureSelectionQuestion(
+
+    public SingleSelectionQuestion(
         int majorIndex,
         int minorIndex,
         int buildIndex,
@@ -21,7 +22,7 @@ public class PictureSelectionQuestion : Question
         IList<IContent> content,
         string reference,
         IList<IList<IContent>> options,
-        int answerIndex) : base(majorIndex, minorIndex, buildIndex, questionIndex, pageIndex, QuestionInputType.PictureSelection, questionLevel, content, reference)
+        int answerIndex) : base(majorIndex, minorIndex, buildIndex, questionIndex, pageIndex, QuestionInputType.SingleSelection, questionLevel, content, reference)
     {
         Options = options;
         AnswerIndex = answerIndex;
