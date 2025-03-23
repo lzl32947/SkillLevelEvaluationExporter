@@ -241,7 +241,7 @@ public class FileExtractor : IFileExtractor
 
 
             var paper = new Paper(meta.Item1, new DateTime(year: meta.Item2.Item1, month: meta.Item2.Item2, day: meta.Item2.Item3),
-                questionTotal.Where(q => q != null).ToList()!, Md5!
+                questionTotal.Where(q => q != null).ToList()!, Md5!, content.ToString(), questionLevels, inputTypes, pageMap
             );
             return paper;
         }

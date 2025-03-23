@@ -1,63 +1,79 @@
+using Exporter.Test.Source;
+using Exporter.Test.Utils;
+using Newtonsoft.Json;
 using SkillLevelEvaluationExporter.Services;
 using SkillLevelEvaluationExporter.Services.Interfaces;
 
 namespace Exporter.Test;
 
-public class Tests
+public class FileUnitTest
 {
-    public IList<string> FList = new List<string>();
 
     [SetUp]
     public void Setup()
     {
-        var files = Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, "Resources"), "*.pdf", SearchOption.AllDirectories);
-        FList = files.ToList();
-    }
-
-    public void FileTest(string fileNameContains)
-    {
-        var file = FList.Where(x => x.Contains(fileNameContains)).ToList();
-        foreach (var item in file)
+        if (false)
         {
-            Console.WriteLine($"正在测试:{item}");
-            var extractor = new FileExtractor
-            {
-                FilePath = item,
-                WorkingDirectory = Path.Combine(Environment.CurrentDirectory, "Temp"),
-                ForceOverride = true
-            };
-            var paper = extractor.Extract();
-            Assert.IsNotNull(paper);
-            Console.WriteLine($"测试通过:{item}");
+            ExportTestResources();
         }
     }
 
-    [Test]
-    public void Test信息运维检修工()
+    public static void ExportTestResources()
     {
-        FileTest("信息运维检修工");
-        Assert.Pass();
-    }
+        var files = FileSource.GetFiles();
+        foreach (var data in files)
+        {
+            var filePath = data[0];
+            var fileName = data[1];
 
-    [Test]
-    public void Test土建施工员()
-    {
-        FileTest("土建施工员");
-        Assert.Pass();
-    }
+            try
+            {
+                var paper = PaperFactory.CreatePaper(filePath);
+                if (paper is null)
+                {
+                    Console.WriteLine($"{fileName} 为 null, 跳过");
+                }
 
-    [Test]
-    public void Test电网调度自动化厂站端调试检修工()
-    {
-        FileTest("电网调度自动化厂站端调试检修工");
-        Assert.Pass();
-    }
+                if (!Directory.Exists("Data"))
+                {
+                    Directory.CreateDirectory("Data");
+                }
 
-    [Test]
-    public void Test装表接电工()
-    {
-        // TODO: 看上去有些计算题没有被正确解析
-        FileTest("装表接电工");
-        Assert.Pass();
+                var levelMap = TestStructureConverter.LevelMapToArray(paper.LevelMap);
+                if (!Directory.Exists("Data/LevelMap"))
+                {
+                    Directory.CreateDirectory("Data/LevelMap");
+                }
+                var levelMapObj = JsonConvert.SerializeObject(levelMap, Formatting.Indented);
+                File.WriteAllText($"Data/LevelMap/{fileName}_levelMap.json", levelMapObj);
+
+                var typeMap = TestStructureConverter.TypeMapToArray(paper.TypeMap);
+                if (!Directory.Exists("Data/TypeMap"))
+                {
+                    Directory.CreateDirectory("Data/TypeMap");
+                }
+                var typeMapObj = JsonConvert.SerializeObject(typeMap, Formatting.Indented);
+                File.WriteAllText($"Data/TypeMap/{fileName}_typeMap.json", typeMapObj);
+
+                var pageMap =  TestStructureConverter.PageMapToArray(paper.PageMap);
+                if (!Directory.Exists("Data/PageMap"))
+                {
+                    Directory.CreateDirectory("Data/PageMap");
+                }
+                var pageMapObj = JsonConvert.SerializeObject(pageMap, Formatting.Indented);
+                File.WriteAllText($"Data/PageMap/{fileName}_pageMap.json", pageMapObj);
+
+                var questionIdentifier = TestStructureConverter.QuestionIdentifierToArray(paper.Questions);
+                if (!Directory.Exists("Data/QuestionIdentifier"))
+                {
+                    Directory.CreateDirectory("Data/QuestionIdentifier");
+                }
+                var questionIdentifierObj = JsonConvert.SerializeObject(questionIdentifier, Formatting.Indented);
+                File.WriteAllText($"Data/QuestionIdentifier/{fileName}_questionIdentifier.json", questionIdentifierObj);
+            }catch (Exception e)
+            {
+                Console.WriteLine($"{fileName} 出现错误: {e.Message}");
+            }
+        }
     }
 }
