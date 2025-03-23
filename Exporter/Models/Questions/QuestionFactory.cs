@@ -28,7 +28,7 @@ public static class QuestionFactory
 
     private static Question? CreateCalculationQuestion(string question, QuestionLevel level,int pageIndex, string imageDirectory)
     {
-        string pattern = @"(\d+)\.(\d+)\.(\d+)\.\s*第(\d+)题\s([\s\S]*?)正确答案：(.*?)[,,]\s+教师详解：([\s\S]*?)关联评价点的名称：([.\s\S]*)";
+        string pattern = @"(\d+)\.(\d+)\.(\d+)\.\s*第(\d+)题\s([\s\S]*?)正确答案：(.*?)[,，]\s+教师详解：([\s\S]*?)关联评价点的名称：([.\s\S]*)";
         Regex regex = new Regex(pattern);
         Match match = regex.Match(question);
         if (match.Success)

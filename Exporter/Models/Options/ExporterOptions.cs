@@ -14,4 +14,7 @@ public class ExporterOptions
     // 认为标题及日期应当在这些内容之前
     public int MaxTitleContentLength { get; set; } = 200;
 
+    // 是否到处图片
+    public bool ExportImage { get; set; } = true;
+
 }

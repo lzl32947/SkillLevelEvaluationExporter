@@ -2,6 +2,7 @@ using Exporter.Test.Source;
 using Exporter.Test.Utils;
 using Newtonsoft.Json;
 using SkillLevelEvaluationExporter.Models;
+using SkillLevelEvaluationExporter.Models.Options;
 using SkillLevelEvaluationExporter.Properties;
 using SkillLevelEvaluationExporter.Services;
 
@@ -13,7 +14,7 @@ public class PaperQuestionTest : FileUnitTest
     [Test, TestCaseSource(typeof(FileSource), nameof(FileSource.GetFiles))]
     public void TestMapFunction(string filePath, string fileName)
     {
-        Paper paper = PaperFactory.CreatePaper(filePath)!;
+        Paper paper = PaperFactory.CreatePaper(filePath,new ExporterOptions{ExportImage = false})!;
 
         Assert.Multiple(() =>
         {
@@ -32,6 +33,9 @@ public class PaperQuestionTest : FileUnitTest
             var pageMapObj = JsonConvert.DeserializeObject<IList<int[]>>(File.ReadAllText(pageMapFile));
             Assert.IsTrue(TestStructureConverter.IsSameArray(TestStructureConverter.PageMapToArray(paper.PageMap), pageMapObj), $"文件 {fileName} 页码映射错误");
 
+            var questionIdentifier = TestStructureConverter.QuestionIdentifierToArray(paper.Questions);
+            var pageIdentifier = paper.PageMap.Select(x => new int[] { x.Key.Item1, x.Key.Item2, x.Key.Item3 }).ToList();
+            Assert.IsTrue(TestStructureConverter.IsSameArray(questionIdentifier, pageIdentifier), $"文件 {fileName} 题号存在错误");
         });
     }
 }

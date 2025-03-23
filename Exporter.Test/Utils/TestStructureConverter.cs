@@ -44,7 +44,21 @@ public static class TestStructureConverter
     {
         HashSet<string> set1 = new HashSet<string>(a.Select(arr => string.Join(",", arr)));
         HashSet<string> set2 = new HashSet<string>(b.Select(arr => string.Join(",", arr)));
-        return set1.SetEquals(set2);
+
+        if (set1.SetEquals(set2))
+        {
+            return true;
+        }
+
+        HashSet<string> differenceSet1 = new HashSet<string>(set1);
+        differenceSet1.ExceptWith(set2);
+
+        HashSet<string> differenceSet2 = new HashSet<string>(set2);
+        differenceSet2.ExceptWith(set1);
+
+        Console.WriteLine($"在列表A中，在列表B中不存在的元素：{string.Join(", ", differenceSet1)}");
+        Console.WriteLine($"在列表B中，在列表A中不存在的元素：{string.Join(", ", differenceSet2)}");
+        return false;
     }
 
 }

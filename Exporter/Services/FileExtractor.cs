@@ -132,12 +132,14 @@ public class FileExtractor : IFileExtractor
                     foreach (var image in page.GetImages())
                     {
                         var fileName = $"{_imageCounter:D4}";
-                        var imageFilePath = Path.Combine(imageDirectory, fileName + ".png");
-
-                        // 保存图像为 PNG 格式
-                        if (image.TryGetPng(out var pngBytes))
+                        if (Options!.ExportImage)
                         {
-                            File.WriteAllBytes(imageFilePath, pngBytes);
+                            var imageFilePath = Path.Combine(imageDirectory, fileName + ".png");
+                            // 保存图像为 PNG 格式
+                            if (image.TryGetPng(out var pngBytes))
+                            {
+                                File.WriteAllBytes(imageFilePath, pngBytes);
+                            }
                         }
 
                         var boundingBox = image.Bounds;
