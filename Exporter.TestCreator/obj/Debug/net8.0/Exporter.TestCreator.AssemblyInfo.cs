@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Exporter.TestCreator")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+031bc2fffdccfb57bb46259b412bd6dd94968ca5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5048a921c1d2981edba03c1073dfab9d3a0ef7d2")]
 [assembly: System.Reflection.AssemblyProductAttribute("Exporter.TestCreator")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Exporter.TestCreator")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

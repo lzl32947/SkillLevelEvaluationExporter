@@ -5,3 +5,5 @@ Exporter.Test/bin
 Exporter.Test/obj
 .vs
 Exporter.Test/Resources
+Exporter.TestCreator/bin
+Exporter.TestCreator/obj
