@@ -4,12 +4,8 @@ using SkillLevelEvaluationExporter.Utils;
 
 namespace SkillLevelEvaluationExporter.Models.Content;
 
-public class ContentText : IContent
+public class ContentText
 {
-    public int Length { get; }
-
-    public Guid Guid { get; }
-
     public string Text { get; }
 
     public string Md5 { get; }
@@ -22,8 +18,6 @@ public class ContentText : IContent
     public ContentText(string text)
     {
         Text = text;
-        Length = text.Length;
-        Guid = Guid.NewGuid();
         Md5 = FileUtil.CalculateStringMd5(text);
     }
 

@@ -7,9 +7,9 @@ namespace SkillLevelEvaluationExporter.Models.Questions;
 
 public abstract class Question
 {
-    private IList<IContent> _content = new List<IContent>();
+    private IList<Object> _content = new List<Object>();
 
-    public IList<IContent> Content
+    public IList<Object> Content
     {
         get => _content;
         set
@@ -40,7 +40,7 @@ public abstract class Question
 
     public string ContentString { get; set; } = string.Empty;
 
-    public string SetString(IList<IContent> content)
+    public string SetString(IList<Object> content)
     {
         var builder = new StringBuilder();
         foreach (var item in content)
@@ -53,7 +53,7 @@ public abstract class Question
 
 
     protected Question(int majorIndex , int minorIndex , int buildIndex, int questionIndex , int pageIndex , QuestionInputType inputType, QuestionLevel level ,
-        IList<IContent> content , string reference = "")
+        IList<Object> content , string reference = "")
     {
         MajorIndex = majorIndex;
         MinorIndex = minorIndex;

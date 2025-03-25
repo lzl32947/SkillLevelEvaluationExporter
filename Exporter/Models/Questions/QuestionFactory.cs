@@ -58,7 +58,7 @@ public static class QuestionFactory
         return null;
     }
 
-    public static IList<IContent> ParseContent(string contentText, string imageDirectory)
+    public static IList<Object> ParseContent(string contentText, string imageDirectory)
     {
         List<Tuple<string, PdfContentType>> result = new();
 
@@ -86,7 +86,7 @@ public static class QuestionFactory
             }
         }
 
-        return result.Select<Tuple<string, PdfContentType>, IContent>(tuple => tuple.Item2 switch
+        return result.Select<Tuple<string, PdfContentType>, Object>(tuple => tuple.Item2 switch
         {
             PdfContentType.Text => new ContentText(tuple.Item1),
             PdfContentType.Image => new ContentImage($"{tuple.Item1}.png", imageDirectory, Int32.Parse(tuple.Item1)),
@@ -175,7 +175,7 @@ public static class QuestionFactory
 
             if (inputType == QuestionInputType.SingleSelection)
             {
-                var options = new List<IList<IContent>>();
+                var options = new List<IList<Object>>();
                 foreach (var choice in choiceList)
                 {
                     options.Add(ParseContent(choice, imageDirectory));
@@ -186,7 +186,7 @@ public static class QuestionFactory
 
             if (inputType == QuestionInputType.MultipleSelection)
             {
-                var options = new List<IList<IContent>>();
+                var options = new List<IList<Object>>();
                 foreach (var choice in choiceList)
                 {
                     options.Add(ParseContent(choice, imageDirectory));
@@ -197,7 +197,7 @@ public static class QuestionFactory
 
             if (inputType == QuestionInputType.PictureSelection)
             {
-                var options = new List<IList<IContent>>();
+                var options = new List<IList<Object>>();
                 foreach (var choice in choiceList)
                 {
                     options.Add(ParseContent(choice, imageDirectory));

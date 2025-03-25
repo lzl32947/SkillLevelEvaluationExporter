@@ -1,14 +1,16 @@
 ﻿namespace SkillLevelEvaluationExporter.Models.Content.Interfaces;
 
-public interface IImageContent : IContent
+public interface IImageContent
 {
     public int ImageIndex { get; }
 
     public string ToString();
 
+    public string ToPlainString();
+
     public string ToMd5String();
 
-    public string Md5 { get; }
+    public string? Md5 { get; }
 
     public string GetImageFilePath();
 
@@ -18,5 +20,4 @@ public interface IImageContent : IContent
 
     public bool Valid { get; }
 
-    public bool HasReplaced { get; }
 }

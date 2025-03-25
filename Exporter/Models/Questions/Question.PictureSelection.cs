@@ -7,7 +7,7 @@ namespace SkillLevelEvaluationExporter.Models.Questions;
 
 public class PictureSelectionQuestion : Question
 {
-    public IList<IList<IContent>> Options { get; }
+    public IList<IList<Object>> Options { get; }
 
     public int AnswerIndex { get; }
 
@@ -18,9 +18,9 @@ public class PictureSelectionQuestion : Question
         int questionIndex,
         QuestionLevel questionLevel,
         int pageIndex,
-        IList<IContent> content,
+        IList<Object> content,
         string reference,
-        IList<IList<IContent>> options,
+        IList<IList<Object>> options,
         int answerIndex) : base(majorIndex, minorIndex, buildIndex, questionIndex, pageIndex, QuestionInputType.PictureSelection, questionLevel, content, reference)
     {
         Options = options;

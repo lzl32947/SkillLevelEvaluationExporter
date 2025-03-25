@@ -6,8 +6,6 @@ namespace SkillLevelEvaluationExporter.Models.Content;
 
 public class ContentImage : IImageContent
 {
-    public Guid Guid { get; }
-
     public int ImageIndex { get; }
 
     public override string ToString()
@@ -17,7 +15,12 @@ public class ContentImage : IImageContent
 
     public string ToMd5String()
     {
-        return $"[图片:{Md5}]";
+        return $"[图片:{Md5??"默认"}]";
+    }
+
+    public string ToPlainString()
+    {
+        return "[图片]";
     }
 
     public string GetImageFilePath()
@@ -31,25 +34,25 @@ public class ContentImage : IImageContent
 
     public bool Valid { get; }
 
-    public bool HasReplaced { get; }
-
     public string SaveFileName { get;  }
 
     public string SaveDirectoryPath { get;  }
 
-    public string Md5 { get; }
+    public string? Md5 { get; }
 
 
 
     public ContentImage(string saveFileName, string saveDirectoryPath, int imageIndex)
     {
-        Guid = Guid.NewGuid();
         SaveFileName = saveFileName;
         SaveDirectoryPath = saveDirectoryPath;
         var imageFilePath = Path.Combine(saveDirectoryPath, saveFileName);
         if (!File.Exists(imageFilePath))
         {
             Valid = false;
+            Md5 = null;
+            Height = null;
+            Width = null;
             var errorPlaceHolder = Path.Combine(Environment.CurrentDirectory, "Resources", "error.png");
             if (File.Exists(errorPlaceHolder))
             {
@@ -59,9 +62,6 @@ public class ContentImage : IImageContent
             {
                 File.WriteAllBytes(imageFilePath, FileUtil.GetErrorPlaceholderImage());
             }
-            HasReplaced = true;
-            Height = null;
-            Width = null;
         }
         else
         {
@@ -72,8 +72,8 @@ public class ContentImage : IImageContent
                     Height = image.Height;
                     Width = image.Width;
                 }
-
                 Valid = false;
+                Md5 = null;
                 var errorPlaceHolder = Path.Combine(Environment.CurrentDirectory, "Resources", "error.png");
                 File.Delete(imageFilePath);
                 if (File.Exists(errorPlaceHolder))
@@ -84,7 +84,6 @@ public class ContentImage : IImageContent
                 {
                     File.WriteAllBytes(imageFilePath, FileUtil.GetErrorPlaceholderImage());
                 }
-                HasReplaced = true;
             }
             else
             {
@@ -94,27 +93,9 @@ public class ContentImage : IImageContent
                     Width = image.Width;
                 }
                 Valid = true;
-                HasReplaced = false;
+                Md5 = FileUtil.CalculateMD5(imageFilePath);
             }
-
         }
-        Md5 = FileUtil.CalculateMD5(imageFilePath);
         ImageIndex = imageIndex;
-    }
-
-
-    public override bool Equals(object? obj)
-    {
-        if (obj is ContentImage image)
-        {
-            return Md5 == image.Md5;
-        }
-
-        return false;
-    }
-
-    public override int GetHashCode()
-    {
-        return Md5.GetHashCode();
     }
 }

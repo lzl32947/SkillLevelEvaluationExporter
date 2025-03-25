@@ -7,7 +7,7 @@ namespace SkillLevelEvaluationExporter.Models.Questions;
 
 public class MultipleSelectionQuestion : Question
 {
-    public IList<IList<IContent>> Options { get; }
+    public IList<IList<Object>> Options { get; }
 
     public IList<int> AnswerIndex { get; }
 
@@ -18,9 +18,9 @@ public class MultipleSelectionQuestion : Question
         int questionIndex,
         QuestionLevel questionLevel,
         int pageIndex,
-        IList<IContent> content,
+        IList<Object> content,
         string reference,
-        IList<IList<IContent>> options,
+        IList<IList<Object>> options,
         IList<int> answerIndex) : base(majorIndex, minorIndex, buildIndex, questionIndex, pageIndex, QuestionInputType.MultipleSelection, questionLevel, content, reference)
     {
         Options = options;
