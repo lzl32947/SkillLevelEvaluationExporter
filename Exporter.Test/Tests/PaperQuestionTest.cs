@@ -13,7 +13,7 @@ namespace Exporter.Test.Tests;
 public class PaperQuestionTest : FileUnitTest
 {
     [Test, TestCaseSource(typeof(FileSource), nameof(FileSource.GetFiles))]
-    public void TestMapFunction(string filePath)
+    public void TestQuestion(string filePath)
     {
         if (!File.Exists(filePath))
         {
