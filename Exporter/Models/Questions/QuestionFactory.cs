@@ -97,7 +97,7 @@ public static class QuestionFactory
     public static Question? CreateSelectableQuestion(string questionContent, QuestionInputType inputType, QuestionLevel level, int pageIndex, string imageDirectory)
     {
         string pattern =
-            @"^(\d+)\.(\d+)\.(\d+)\.第(\d+)题([\s\S]+?)(?=A)(?:A\.)([\s\S\n\r]+?)(?=B)(?:B\.)([\s\S\n\r]+?)(?=[C正])((?:C\.)([\s\S\n\r]+?)(?=[D正]))*((?:D\.)([\s\S\n\r]+?)(?=[E正]))*((?:E\.)([\s\S\n\r]+?)(?=[F正]))*((?:F\.)([\s\S\n\r]+?)(?=[G正]))*((?:G\.)([\s\S\n\r]+?)(?=H正))*((?:H\.)([\s\S\n\r]+?)(?=I正))*((?:I\.)([\s\S\n\r]+?)(?=正))*正确答案：\s*([AaBbCcDdEeFfGgHhIi，ＡＢＣＤＥＦＧＨＩ]+)\s+关联评价点的名称：([.\s\S]*)";
+            @"^(\d+)\.(\d+)\.(\d+)\.第(\d+)题([\s\S]+?)(?=A)(?:A\.)([\s\S\n\r]+?)(?=B)(?:B\.)([\s\S\n\r]+?)(?=[C正])((?:C\.)([\s\S\n\r]+?)(?=[D正]))*((?:D\.)([\s\S\n\r]+?)(?=[E正]))*((?:E\.)([\s\S\n\r]+?)(?=[F正]))*((?:F\.)([\s\S\n\r]+?)(?=[G正]))*((?:G\.)([\s\S\n\r]+?)(?=H正))*((?:H\.)([\s\S\n\r]+?)(?=I正))*((?:I\.)([\s\S\n\r]+?)(?=正J))*((?:J\.)([\s\S\n\r]+?)(?=K正))*((?:K\.)([\s\S\n\r]+?)(?=正L))*((?:L\.)([\s\S\n\r]+?)(?=正M))*((?:M\.)([\s\S\n\r]+?)(?=正N))*((?:N\.)([\s\S\n\r]+?)(?=正))*正确答案：\s*([AaBbCcDdEeFfGgHhIiJjKkLlMmNn，ＡＢＣＤＥＦＧＨＩ]+)\s+关联评价点的名称：([.\s\S]*)";
         Regex regex = new(pattern);
         Match match = regex.Match(questionContent);
         if (match.Success)
@@ -114,7 +114,7 @@ public static class QuestionFactory
             // 选项 B
             choiceList.Add(match.Groups[7].Value);
             // 选项 C to H
-            for (int i = 9; i < 22; i += 2)
+            for (int i = 9; i < 32; i += 2)
             {
                 if (match.Groups[i].Success)
                 {
@@ -122,7 +122,7 @@ public static class QuestionFactory
                 }
             }
 
-            foreach (char c in match.Groups[22].Value)
+            foreach (char c in match.Groups[32].Value)
             {
                 if (c >= 'A' && c <= 'Z')
                 {
@@ -170,7 +170,7 @@ public static class QuestionFactory
                 }
             }
 
-            var reference = match.Groups[23].Value;
+            var reference = match.Groups[33].Value;
 
 
             if (inputType == QuestionInputType.SingleSelection)

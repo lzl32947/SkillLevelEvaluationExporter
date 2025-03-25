@@ -24,6 +24,13 @@
         "Minor": 5,
         "Build": 15
       }
+    ],
+    "fe2438dde242f39ddbf962486747d78e": [
+      {
+        "Major": 4,
+        "Minor": 2,
+        "Build": 22
+      }
     ]
   }
 }
