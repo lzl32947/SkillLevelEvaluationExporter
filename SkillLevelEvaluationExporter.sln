@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exporter", "Exporter\Export
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exporter.Test", "Exporter.Test\Exporter.Test.csproj", "{9826C2AB-F018-4A62-B08C-7DEA54C17DA5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exporter.TestCreator", "Exporter.TestCreator\Exporter.TestCreator.csproj", "{B9529EC5-974C-4A04-858F-EA4215DF2AA1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{9826C2AB-F018-4A62-B08C-7DEA54C17DA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9826C2AB-F018-4A62-B08C-7DEA54C17DA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9826C2AB-F018-4A62-B08C-7DEA54C17DA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9529EC5-974C-4A04-858F-EA4215DF2AA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9529EC5-974C-4A04-858F-EA4215DF2AA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9529EC5-974C-4A04-858F-EA4215DF2AA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9529EC5-974C-4A04-858F-EA4215DF2AA1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

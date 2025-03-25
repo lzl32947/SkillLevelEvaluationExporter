@@ -8,7 +8,7 @@ namespace Exporter.Test.Tests;
 public class FileExtractorTest:FileUnitTest
 {
     [Test,TestCaseSource(typeof(FileSource), nameof(FileSource.GetFiles))]
-    public void TestExtract(string filePath, string fileName)
+    public void TestExtract(string filePath)
     {
         var paper = PaperFactory.CreatePaper(filePath);
         Assert.IsNotNull(paper);

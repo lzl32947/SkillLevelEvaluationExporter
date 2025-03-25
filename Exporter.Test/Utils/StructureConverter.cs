@@ -3,7 +3,7 @@ using SkillLevelEvaluationExporter.Properties;
 
 namespace Exporter.Test.Utils;
 
-public static class TestStructureConverter
+public static class StructureConverter
 {
     public static IList<int[]> LevelMapToArray(IDictionary<Tuple<int, int>, QuestionLevel> levelMap)
     {
