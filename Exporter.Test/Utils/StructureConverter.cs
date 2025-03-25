@@ -1,3 +1,5 @@
+using System.Collections;
+using Exporter.Test.Source;
 using SkillLevelEvaluationExporter.Models.Questions;
 using SkillLevelEvaluationExporter.Properties;
 
@@ -40,25 +42,33 @@ public static class StructureConverter
         return questions.Select(q => new int[] { q.MajorIndex, q.MinorIndex, q.BuildIndex }).ToList();
     }
 
-    public static bool IsSameArray(IList<int[]> a, IList<int[]> b)
+    public static IList<QuestionIdentifier> ParseQuestionIdentifier(IList<Question> questions)
     {
-        HashSet<string> set1 = new HashSet<string>(a.Select(arr => string.Join(",", arr)));
-        HashSet<string> set2 = new HashSet<string>(b.Select(arr => string.Join(",", arr)));
+        return questions.Select(q => new QuestionIdentifier
+        {
+            Major = q.MajorIndex,
+            Minor = q.MinorIndex,
+            Build = q.BuildIndex
+        }).ToList();
+    }
+
+    public static Tuple<List<QuestionIdentifier>, List<QuestionIdentifier>> DifferenceQuestions(IList<QuestionIdentifier> a, IList<QuestionIdentifier> b)
+    {
+        var set1 = new HashSet<QuestionIdentifier>(a);
+        var set2 = new HashSet<QuestionIdentifier>(b);
 
         if (set1.SetEquals(set2))
         {
-            return true;
+            return new Tuple<List<QuestionIdentifier>, List<QuestionIdentifier>>([], []);
         }
 
-        HashSet<string> differenceSet1 = new HashSet<string>(set1);
+        var differenceSet1 = new HashSet<QuestionIdentifier>(set1);
         differenceSet1.ExceptWith(set2);
 
-        HashSet<string> differenceSet2 = new HashSet<string>(set2);
+        var differenceSet2 = new HashSet<QuestionIdentifier>(set2);
         differenceSet2.ExceptWith(set1);
 
-        Console.WriteLine($"在列表A中，在列表B中不存在的元素：{string.Join(", ", differenceSet1)}");
-        Console.WriteLine($"在列表B中，在列表A中不存在的元素：{string.Join(", ", differenceSet2)}");
-        return false;
+        return Tuple.Create(differenceSet1.ToList(), differenceSet2.ToList());
     }
 
 }

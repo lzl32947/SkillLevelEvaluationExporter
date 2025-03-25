@@ -90,11 +90,11 @@ public class FileExtractor : IFileExtractor
             var pageDictionary = new Dictionary<int, string>();
             using (PdfDocument pdfDocument = PdfDocument.Open(FilePath!))
             {
-                var pages = pdfDocument.GetPages().ToList();
-                for (int pageNumIndex = 0; pageNumIndex < pages.Count(); pageNumIndex++)
+                var pageNumIndex = 0;
+                var pages = pdfDocument.GetPages();
+                foreach (var page in pages)
                 {
                     var wordList = new List<PdfContentElement>();
-                    var page = pages[pageNumIndex];
                     var pageString = new StringBuilder();
                     // 提取文字
                     foreach (var word in page.GetWords())
@@ -197,6 +197,7 @@ public class FileExtractor : IFileExtractor
 
                     content = content.Append(builder);
                     content.AppendLine();
+                    pageNumIndex++;
                 }
             }
 
