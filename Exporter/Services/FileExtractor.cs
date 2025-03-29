@@ -179,8 +179,7 @@ public class FileExtractor : IFileExtractor
                         PdfContentElement elementI = wordList[i];
                         if (Math.Abs(elementI.Rectangle.Top - previousTop) > Options!.LineSep)
                         {
-                            // 两行内容
-                            // TODO: 判断两行之间是否应该加换行符
+                            // 两行内容，在这里不进行是否同行的判断
                             builder.Append('\n');
                             previousTop = elementI.Rectangle.Top;
                         }
