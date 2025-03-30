@@ -4,7 +4,7 @@ using SkillLevelEvaluationExporter.Utils;
 
 namespace SkillLevelEvaluationExporter.Models.Content;
 
-public class ContentImage : IImageContent
+public class ContentImage :IContent
 {
     public int ImageIndex { get; }
 

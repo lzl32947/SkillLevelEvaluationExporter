@@ -11,6 +11,10 @@ public class Paper
 
     public IList<Question> Questions { get; }
 
+    public string? LocalFilePath { get; set; }
+
+    public string? RemoteUrlPath { get; set; }
+
     public string FileMd5 { get; }
 
     public string RawContent { get; }

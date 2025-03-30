@@ -7,7 +7,7 @@ namespace SkillLevelEvaluationExporter.Models.Questions;
 
 public class SingleSelectionQuestion : Question
 {
-    public IList<IList<Object>> Options { get; }
+    public IList<IList<IContent>> Options { get; }
 
     public int AnswerIndex { get; }
 
@@ -19,9 +19,9 @@ public class SingleSelectionQuestion : Question
         int questionIndex,
         QuestionLevel questionLevel,
         int pageIndex,
-        IList<Object> content,
+        IList<IContent> content,
         string reference,
-        IList<IList<Object>> options,
+        IList<IList<IContent>> options,
         int answerIndex) : base(majorIndex, minorIndex, buildIndex, questionIndex, pageIndex, QuestionInputType.SingleSelection, questionLevel, content, reference)
     {
         Options = options;
@@ -57,7 +57,7 @@ public class SingleSelectionQuestion : Question
         baseString.Append('\n');
         for (int index = 0; index < Options.Count; index++)
         {
-            baseString.Append($"{QuestionUtil.Index2String(index)}. ");
+            baseString.Append($"{index.Index2String()}. ");
             foreach (var item in Options[index])
             {
                 baseString.Append(item);
@@ -66,7 +66,7 @@ public class SingleSelectionQuestion : Question
             baseString.Append('\n');
         }
 
-        baseString.Append($"答案: {QuestionUtil.Index2String(AnswerIndex)}");
+        baseString.Append($"答案: {AnswerIndex.Index2String()}");
         baseString.Append('\n');
         baseString.AppendLine($"关联评价点名称: {Reference}");
         return baseString.ToString();

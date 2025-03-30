@@ -8,7 +8,7 @@ public class CalculationQuestion : Question
 {
     public string Answer { get; }
 
-    public IList<Object> Solve { get; }
+    public IList<IContent> Solve { get; }
 
     public CalculationQuestion(
         int majorIndex,
@@ -17,9 +17,9 @@ public class CalculationQuestion : Question
         int questionIndex,
         QuestionLevel questionLevel,
         int pageIndex,
-        IList<Object> content,
+        IList<IContent> content,
         string reference,
-        IList<Object> solve,
+        IList<IContent> solve,
         string answer) : base(majorIndex, minorIndex, buildIndex, questionIndex, pageIndex, QuestionInputType.Calculation, questionLevel, content, reference)
     {
         Solve = solve;

@@ -4,7 +4,7 @@ using SkillLevelEvaluationExporter.Utils;
 
 namespace SkillLevelEvaluationExporter.Models.Content;
 
-public class ContentText
+public class ContentText:IContent
 {
     public string Text { get; }
 

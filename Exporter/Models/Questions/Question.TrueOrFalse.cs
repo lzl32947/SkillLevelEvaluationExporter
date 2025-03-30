@@ -17,7 +17,7 @@ public class TrueOrFalseQuestion : Question
         int questionIndex,
         QuestionLevel questionLevel,
         int pageIndex,
-        IList<Object> content,
+        IList<IContent> content,
         string reference,
         bool isCorrect) : base(majorIndex, minorIndex, buildIndex, questionIndex, pageIndex, QuestionInputType.TrueOrFalse, questionLevel, content, reference)
     {

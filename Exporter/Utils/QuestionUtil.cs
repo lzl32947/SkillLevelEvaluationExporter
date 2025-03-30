@@ -9,7 +9,7 @@ public static class QuestionUtil
     /// </summary>
     /// <param name="index">整数索引,通常用于标识问题的选项</param>
     /// <returns>对应的字符串标识,如"A", "B"等；如果索引超出范围,则返回"Unknown"</returns>
-    public static string Index2String(int index)
+    public static string Index2String(this int index)
     {
         return index switch
         {
@@ -48,7 +48,7 @@ public static class QuestionUtil
     /// </summary>
     /// <param name="index">整数索引列表</param>
     /// <returns>对应的字符串标识列表</returns>
-    public static IList<string> Index2String(IList<int> index)
+    public static IList<string> Index2String(this IList<int> index)
     {
         return index.Select(Index2String).ToList();
     }
@@ -58,7 +58,7 @@ public static class QuestionUtil
     /// </summary>
     /// <param name="index">整数索引列表</param>
     /// <returns>一个连续的字符串,由各个索引对应的字符串标识组成</returns>
-    public static string Index2JointString(IList<int> index)
+    public static string Index2JointString(this IList<int> index)
     {
         return string.Join("", Index2String(index));
     }
@@ -68,7 +68,7 @@ public static class QuestionUtil
     /// </summary>
     /// <param name="str">字符串标识,如"A", "B"等</param>
     /// <returns>对应的整数索引；如果字符串不在定义范围内,则返回-1</returns>
-    public static int String2Index(string str)
+    public static int String2Index(this string str)
     {
         return str switch
         {
@@ -107,7 +107,7 @@ public static class QuestionUtil
     /// </summary>
     /// <param name="str">字符串标识列表</param>
     /// <returns>对应的整数索引列表</returns>
-    public static IList<int> String2Index(IList<string> str)
+    public static IList<int> String2Index(this IList<string> str)
     {
         return str.Select(String2Index).ToList();
     }
