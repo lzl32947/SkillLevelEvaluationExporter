@@ -1,3 +1,4 @@
+using SkillLevelEvaluationExporter.Models.Content;
 using SkillLevelEvaluationExporter.Models.Questions;
 using SkillLevelEvaluationExporter.Properties;
 
@@ -11,9 +12,6 @@ public class Paper
 
     public IList<Question> Questions { get; }
 
-    public string? LocalFilePath { get; set; }
-
-    public string? RemoteUrlPath { get; set; }
 
     public string FileMd5 { get; }
 
@@ -37,4 +35,17 @@ public class Paper
         TypeMap = typeMap;
         PageMap = pageMap;
     }
+
+    public Paper(Paper other)
+    {
+        Title = other.Title;
+        PublishDate = other.PublishDate;
+        Questions = other.Questions;
+        FileMd5 = other.FileMd5;
+        RawContent = other.RawContent;
+        LevelMap = new Dictionary<Tuple<int, int>, QuestionLevel>(other.LevelMap);
+        TypeMap = new Dictionary<int, QuestionInputType>(other.TypeMap);
+        PageMap = new Dictionary<Tuple<int, int, int>, int>(other.PageMap);
+    }
+
 }
