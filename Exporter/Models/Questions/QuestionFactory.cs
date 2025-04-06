@@ -7,26 +7,26 @@ namespace SkillLevelEvaluationExporter.Models.Questions;
 
 public static class QuestionFactory
 {
-    public static Question? Create(string question, QuestionInputType questionType, QuestionLevel questionLevel, int pageIndex, string imageDirectory)
+    public static Question? Create(string question, QuestionInputType questionType, QuestionLevel questionLevel, int pageIndex, string imageDirectory, Dictionary<int, ImageDetail> imageDetails)
     {
         switch (questionType)
         {
             case QuestionInputType.SingleSelection:
-                return CreateSelectableQuestion(question, QuestionInputType.SingleSelection, questionLevel, pageIndex, imageDirectory) as SingleSelectionQuestion;
+                return CreateSelectableQuestion(question, QuestionInputType.SingleSelection, questionLevel, pageIndex, imageDirectory, imageDetails) as SingleSelectionQuestion;
             case QuestionInputType.MultipleSelection:
-                return CreateSelectableQuestion(question, QuestionInputType.MultipleSelection, questionLevel, pageIndex, imageDirectory) as MultipleSelectionQuestion;
+                return CreateSelectableQuestion(question, QuestionInputType.MultipleSelection, questionLevel, pageIndex, imageDirectory, imageDetails) as MultipleSelectionQuestion;
             case QuestionInputType.PictureSelection:
-                return CreateSelectableQuestion(question, QuestionInputType.PictureSelection, questionLevel, pageIndex, imageDirectory) as PictureSelectionQuestion;
+                return CreateSelectableQuestion(question, QuestionInputType.PictureSelection, questionLevel, pageIndex, imageDirectory, imageDetails) as PictureSelectionQuestion;
             case QuestionInputType.TrueOrFalse:
-                return CreateSelectableQuestion(question, QuestionInputType.TrueOrFalse, questionLevel, pageIndex, imageDirectory) as TrueOrFalseQuestion;
+                return CreateSelectableQuestion(question, QuestionInputType.TrueOrFalse, questionLevel, pageIndex, imageDirectory, imageDetails) as TrueOrFalseQuestion;
             case QuestionInputType.Calculation:
-                return CreateCalculationQuestion(question, questionLevel, pageIndex, imageDirectory) as CalculationQuestion;
+                return CreateCalculationQuestion(question, questionLevel, pageIndex, imageDirectory, imageDetails) as CalculationQuestion;
             default:
                 return null;
         }
     }
 
-    private static Question? CreateCalculationQuestion(string question, QuestionLevel level, int pageIndex, string imageDirectory)
+    private static Question? CreateCalculationQuestion(string question, QuestionLevel level, int pageIndex, string imageDirectory, Dictionary<int, ImageDetail> imageDetails)
     {
         string pattern = @"(\d+)\.(\d+)\.(\d+)\.\s*第(\d+)题\s([\s\S]*?)正确答案：(.*?)[,，]\s+教师详解：([\s\S]*?)关联评价点的名称：([.\s\S]*)";
         Regex regex = new Regex(pattern);
@@ -48,9 +48,9 @@ public static class QuestionFactory
                 index,
                 level,
                 pageIndex,
-                ParseContent(contentString, imageDirectory),
+                ParseContent(contentString, imageDirectory, imageDetails),
                 reference.Trim('\n', '\r'),
-                ParseContent(reason, imageDirectory),
+                ParseContent(reason, imageDirectory, imageDetails),
                 correctAnswer
             );
         }
@@ -58,7 +58,7 @@ public static class QuestionFactory
         return null;
     }
 
-    public static IList<IContent> ParseContent(string contentText, string imageDirectory)
+    public static IList<IContent> ParseContent(string contentText, string imageDirectory, Dictionary<int, ImageDetail> imageDetails)
     {
         List<Tuple<string, PdfContentType>> result = new();
 
@@ -89,12 +89,17 @@ public static class QuestionFactory
         return result.Select<Tuple<string, PdfContentType>, IContent>(tuple => tuple.Item2 switch
         {
             PdfContentType.Text => new ContentText(tuple.Item1),
-            PdfContentType.Image => new ContentImage(Path.Combine(imageDirectory,$"{tuple.Item1}.png"), Int32.Parse(tuple.Item1)),
+            PdfContentType.Image => new ContentImage(
+                Path.Combine(imageDirectory,$"{tuple.Item1}.png"),
+                imageDetails[int.Parse(tuple.Item1)].ImageIndex,
+                imageDetails[int.Parse(tuple.Item1)].ImagePage,
+                imageDetails[int.Parse(tuple.Item1)].PageImageIndex
+            ),
             _ => throw new ArgumentOutOfRangeException()
         }).ToList();
     }
 
-    public static Question? CreateSelectableQuestion(string questionContent, QuestionInputType inputType, QuestionLevel level, int pageIndex, string imageDirectory)
+    public static Question? CreateSelectableQuestion(string questionContent, QuestionInputType inputType, QuestionLevel level, int pageIndex, string imageDirectory, Dictionary<int, ImageDetail> imageDetails)
     {
         string pattern =
             @"^(\d+)\.(\d+)\.(\d+)\.第(\d+)题([\s\S]+?)(?=A)(?:A\.)([\s\S\n\r]+?)(?=B)(?:B\.)([\s\S\n\r]+?)(?=[C正])((?:C\.)([\s\S\n\r]+?)(?=[D正]))*((?:D\.)([\s\S\n\r]+?)(?=[E正]))*((?:E\.)([\s\S\n\r]+?)(?=[F正]))*((?:F\.)([\s\S\n\r]+?)(?=[G正]))*((?:G\.)([\s\S\n\r]+?)(?=H正))*((?:H\.)([\s\S\n\r]+?)(?=I正))*((?:I\.)([\s\S\n\r]+?)(?=正J))*((?:J\.)([\s\S\n\r]+?)(?=K正))*((?:K\.)([\s\S\n\r]+?)(?=正L))*((?:L\.)([\s\S\n\r]+?)(?=正M))*((?:M\.)([\s\S\n\r]+?)(?=正N))*((?:N\.)([\s\S\n\r]+?)(?=正))*正确答案：\s*([AaBbCcDdEeFfGgHhIiJjKkLlMmNn，ＡＢＣＤＥＦＧＨＩ]+)\s+关联评价点的名称：([.\s\S]*)";
@@ -178,10 +183,10 @@ public static class QuestionFactory
                 var options = new List<IList<IContent>>();
                 foreach (var choice in choiceList)
                 {
-                    options.Add(ParseContent(choice, imageDirectory));
+                    options.Add(ParseContent(choice, imageDirectory, imageDetails));
                 }
 
-                return new SingleSelectionQuestion(major, minor, build, index, level, pageIndex, ParseContent(contentString, imageDirectory), reference.Trim('\n', '\r'), options, correctList[0]);
+                return new SingleSelectionQuestion(major, minor, build, index, level, pageIndex, ParseContent(contentString, imageDirectory, imageDetails), reference.Trim('\n', '\r'), options, correctList[0]);
             }
 
             if (inputType == QuestionInputType.MultipleSelection)
@@ -189,10 +194,10 @@ public static class QuestionFactory
                 var options = new List<IList<IContent>>();
                 foreach (var choice in choiceList)
                 {
-                    options.Add(ParseContent(choice, imageDirectory));
+                    options.Add(ParseContent(choice, imageDirectory, imageDetails));
                 }
 
-                return new MultipleSelectionQuestion(major, minor, build, index, level, pageIndex, ParseContent(contentString, imageDirectory), reference.Trim('\n', '\r'), options, correctList);
+                return new MultipleSelectionQuestion(major, minor, build, index, level, pageIndex, ParseContent(contentString, imageDirectory, imageDetails), reference.Trim('\n', '\r'), options, correctList);
             }
 
             if (inputType == QuestionInputType.PictureSelection)
@@ -200,15 +205,15 @@ public static class QuestionFactory
                 var options = new List<IList<IContent>>();
                 foreach (var choice in choiceList)
                 {
-                    options.Add(ParseContent(choice, imageDirectory));
+                    options.Add(ParseContent(choice, imageDirectory, imageDetails));
                 }
 
-                return new PictureSelectionQuestion(major, minor, build, index, level, pageIndex, ParseContent(contentString, imageDirectory), reference.Trim('\n', '\r'), options, correctList[0]);
+                return new PictureSelectionQuestion(major, minor, build, index, level, pageIndex, ParseContent(contentString, imageDirectory, imageDetails), reference.Trim('\n', '\r'), options, correctList[0]);
             }
 
             if (inputType == QuestionInputType.TrueOrFalse)
             {
-                return new TrueOrFalseQuestion(major, minor, build, index, level, pageIndex, ParseContent(contentString, imageDirectory), reference.Trim('\n', '\r'), correctList[0] == 0);
+                return new TrueOrFalseQuestion(major, minor, build, index, level, pageIndex, ParseContent(contentString, imageDirectory, imageDetails), reference.Trim('\n', '\r'), correctList[0] == 0);
             }
 
             throw new NotImplementedException("Question type not implemented");

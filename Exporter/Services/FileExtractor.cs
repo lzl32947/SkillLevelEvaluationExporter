@@ -88,12 +88,14 @@ public class FileExtractor : IFileExtractor
         {
             var content = new StringBuilder();
             var pageDictionary = new Dictionary<int, string>();
+            var imageDetailMapping = new Dictionary<int, ImageDetail>();
             using (PdfDocument pdfDocument = PdfDocument.Open(FilePath!))
             {
                 var pageNumIndex = 0;
                 var pages = pdfDocument.GetPages();
                 foreach (var page in pages)
                 {
+                    var pageImageIndex = 0;
                     var wordList = new List<PdfContentElement>();
                     var pageString = new StringBuilder();
                     // 提取文字
@@ -121,7 +123,7 @@ public class FileExtractor : IFileExtractor
                         }
 
                         wordList.Add(new PdfContentElement(
-                            PdfContentType.Text, boundingBox, word.Text, pageNumIndex)
+                            PdfContentType.Text, boundingBox, word.Text)
                         );
 
                         pageString.AppendLine(word.Text);
@@ -145,9 +147,11 @@ public class FileExtractor : IFileExtractor
                         var boundingBox = image.Bounds;
 
                         wordList.Add(new PdfContentElement(
-                            PdfContentType.Image, boundingBox, fileName, pageNumIndex)
+                            PdfContentType.Image, boundingBox, fileName)
                         );
+                        imageDetailMapping.Add(_imageCounter, new ImageDetail(_imageCounter, pageNumIndex + 1, pageImageIndex));
                         _imageCounter++;
+                        pageImageIndex++;
                     }
 
 
@@ -238,11 +242,11 @@ public class FileExtractor : IFileExtractor
                 var level = questionLevels[new Tuple<int, int>(majorIndex, minorIndex)];
                 var type = inputTypes[majorIndex];
                 pageMap.TryGetValue(new Tuple<int, int, int>(majorIndex, minorIndex, buildIndex), out var page);
-                questionTotal.Add(QuestionFactory.Create(contentText, type, level, page, imageDirectory));
+                questionTotal.Add(QuestionFactory.Create(contentText, type, level, page, imageDirectory, imageDetailMapping));
             }
 
 
-            var paper = new Paper(meta.Item1,new DateTime(year: meta.Item2.Item1, month: meta.Item2.Item2, day: meta.Item2.Item3),
+            var paper = new Paper(meta.Item1, new DateTime(year: meta.Item2.Item1, month: meta.Item2.Item2, day: meta.Item2.Item3),
                 questionTotal.Where(q => q != null).ToList()!, Md5!, content.ToString(), questionLevels, inputTypes, pageMap
             );
             return paper;

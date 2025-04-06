@@ -8,6 +8,10 @@ public class ContentImage :IContent
 {
     public int ImageIndex { get; }
 
+    public int ImagePage { get; }
+
+    public int PageIndex { get; }
+
     public override string ToString()
     {
         return $"[图片:{ImageIndex:D4}]";
@@ -30,9 +34,11 @@ public class ContentImage :IContent
 
 
 
-    public ContentImage(string localImagePath, int imageIndex)
+    public ContentImage(string localImagePath, int imageIndex, int imagePage, int pageIndex)
     {
         LocalImagePath = localImagePath;
+        ImagePage = imagePage;
+        PageIndex = pageIndex;
         if (!File.Exists(localImagePath))
         {
             Valid = false;
